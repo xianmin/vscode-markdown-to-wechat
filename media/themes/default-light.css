@@ -1,0 +1,99 @@
+:root {
+  --foreground-color: #333;
+  --background-color: #fff;
+  --border-color: #ddd;
+  --heading-color: red;
+  --link-color: #0366d6;
+  --blockquote-color: #666;
+  --code-background: rgba(0, 0, 0, 0.06);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu',
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--foreground-color);
+  background-color: var(--background-color);
+  padding: 0 20px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--heading-color);
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 2em;
+  margin-top: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--border-color);
+}
+h3 {
+  font-size: 1.25em;
+}
+h4 {
+  font-size: 1em;
+}
+h5 {
+  font-size: 0.875em;
+}
+h6 {
+  font-size: 0.85em;
+  color: #777;
+}
+
+p,
+blockquote,
+ul,
+ol,
+dl,
+table {
+  margin: 0 0 16px 0;
+}
+
+blockquote {
+  border-left: 4px solid var(--border-color);
+  padding: 0 15px;
+  color: var(--blockquote-color);
+  margin: 0 0 16px 0;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  background-color: var(--code-background);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 85%;
+}
+
+pre {
+  background-color: var(--code-background);
+  border-radius: 3px;
+  padding: 16px;
+  overflow: auto;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+}

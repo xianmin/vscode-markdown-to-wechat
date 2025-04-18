@@ -19,6 +19,12 @@
   font-size: 1.5rem;
 }
 
+.toolbar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .toolbar button {
   background-color: var(--accent-color);
   color: white;
@@ -32,6 +38,51 @@
 .toolbar button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.theme-selector {
+  position: relative;
+}
+
+.theme-button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.theme-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.theme-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.theme-item:hover {
+  background-color: #f5f5f5;
+}
+
+.theme-item-active {
+  background-color: rgba(var(--accent-color-rgb), 0.1);
+  font-weight: 500;
 }
 
 .preview-container {

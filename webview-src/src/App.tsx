@@ -17,11 +17,20 @@ interface AppProps {
   vscode: VSCodeAPI
 }
 
+// 定义主题类型
+interface Theme {
+  id: string
+  name: string
+}
+
 function App({ vscode }: AppProps) {
   const [markdown, setMarkdown] = useState<string>('')
   const [html, setHtml] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+  const [themes, setThemes] = useState<Theme[]>([])
+  const [currentTheme, setCurrentTheme] = useState<string>('')
+  const [showThemeSelector, setShowThemeSelector] = useState<boolean>(false)
 
   // 处理从VSCode接收的消息
   useEffect(() => {
@@ -30,6 +39,10 @@ function App({ vscode }: AppProps) {
       switch (message.type) {
         case 'setMarkdown':
           setMarkdown(message.content)
+          break
+        case 'setThemes':
+          setThemes(message.themes)
+          setCurrentTheme(message.currentTheme)
           break
         default:
           console.log('未知消息类型', message.type)
@@ -40,6 +53,9 @@ function App({ vscode }: AppProps) {
 
     // 通知VSCode WebView已准备好接收数据
     vscode.postMessage({ type: 'webviewReady' })
+
+    // 请求主题列表
+    vscode.postMessage({ type: 'getThemes' })
 
     return () => {
       window.removeEventListener('message', handleMessage)
@@ -74,16 +90,49 @@ function App({ vscode }: AppProps) {
     convertMarkdown()
   }, [markdown])
 
+  // 切换主题
+  const handleThemeChange = (themeId: string) => {
+    vscode.postMessage({
+      type: 'setTheme',
+      themeId,
+    })
+    setCurrentTheme(themeId)
+    setShowThemeSelector(false)
+  }
+
   return (
     <div className="app-container">
       <div className="toolbar">
         <h1>微信公众号预览</h1>
-        <button
-          onClick={() => vscode.postMessage({ type: 'copyHtml', html })}
-          disabled={isLoading || !html}
-        >
-          复制HTML 测试
-        </button>
+        <div className="toolbar-actions">
+          <div className="theme-selector">
+            <button
+              className="theme-button"
+              onClick={() => setShowThemeSelector(!showThemeSelector)}
+            >
+              主题: {themes.find((t) => t.id === currentTheme)?.name || '默认'}
+            </button>
+            {showThemeSelector && (
+              <div className="theme-dropdown">
+                {themes.map((theme) => (
+                  <div
+                    key={theme.id}
+                    className={`theme-item ${theme.id === currentTheme ? 'theme-item-active' : ''}`}
+                    onClick={() => handleThemeChange(theme.id)}
+                  >
+                    {theme.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => vscode.postMessage({ type: 'copyHtml', html })}
+            disabled={isLoading || !html}
+          >
+            复制HTML
+          </button>
+        </div>
       </div>
 
       <div className="preview-container">

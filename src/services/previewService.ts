@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { WebviewContentProvider } from '../webview/contentProvider'
+import { Theme, ThemeManager } from '../utils/themeManager'
 
 /**
  * 预览服务接口
@@ -17,6 +18,22 @@ export interface IPreviewService {
    * @param markdownContent 新的 Markdown 内容
    */
   updatePreview(markdownContent: string): void
+
+  /**
+   * 设置主题
+   * @param themeId 主题ID
+   */
+  setTheme(themeId: string): void
+
+  /**
+   * 获取当前主题
+   */
+  getCurrentTheme(): Theme | undefined
+
+  /**
+   * 获取所有可用主题
+   */
+  getThemes(): Theme[]
 
   /**
    * 注册事件监听
@@ -46,12 +63,31 @@ export class PreviewService implements IPreviewService {
   // 扩展URI，用于资源访问
   private readonly extensionUri: vscode.Uri
 
+  // 主题管理器
+  private readonly themeManager: ThemeManager
+
+  // 当前主题ID
+  private currentThemeId: string = 'default-light'
+
   /**
    * 构造函数
    * @param extensionUri 扩展URI
    */
   constructor(extensionUri: vscode.Uri) {
     this.extensionUri = extensionUri
+    this.themeManager = new ThemeManager(extensionUri.fsPath)
+
+    // 读取用户设置中的主题，如果有的话
+    const config = vscode.workspace.getConfiguration('markdown-to-wechat')
+    const configTheme = config.get<string>('theme')
+
+    // 初始化主题
+    const defaultTheme = this.themeManager.getDefaultTheme()
+    if (configTheme && this.themeManager.getThemeCSS(configTheme)) {
+      this.currentThemeId = configTheme
+    } else if (defaultTheme) {
+      this.currentThemeId = defaultTheme.id
+    }
   }
 
   /**
@@ -83,10 +119,14 @@ export class PreviewService implements IPreviewService {
     // 存储当前内容以便在 WebView 准备好时使用
     const initialContent = markdownContent
 
+    // 获取当前主题CSS
+    const themeCSS = this.themeManager.getThemeCSS(this.currentThemeId)
+
     // 设置WebView的HTML内容
     this.previewPanel.webview.html = WebviewContentProvider.getWebviewContent(
       this.previewPanel.webview,
-      this.extensionUri
+      this.extensionUri,
+      themeCSS
     )
 
     // 注册消息处理
@@ -109,6 +149,54 @@ export class PreviewService implements IPreviewService {
         content: markdownContent,
       })
     }
+  }
+
+  /**
+   * 设置主题
+   * @param themeId 主题ID
+   */
+  public setTheme(themeId: string): void {
+    if (this.currentThemeId === themeId) {
+      return
+    }
+
+    const themeCSS = this.themeManager.getThemeCSS(themeId)
+    if (!themeCSS) {
+      vscode.window.showWarningMessage(`主题 "${themeId}" 不存在或无法加载`)
+      return
+    }
+
+    this.currentThemeId = themeId
+
+    // 如果预览面板已打开，则更新主题
+    if (this.previewPanel) {
+      this.previewPanel.webview.html = WebviewContentProvider.getWebviewContent(
+        this.previewPanel.webview,
+        this.extensionUri,
+        themeCSS
+      )
+
+      // 通知WebView主题已更改
+      this.sendThemesToWebView()
+    }
+
+    // 保存用户选择的主题
+    vscode.workspace.getConfiguration('markdown-to-wechat').update('theme', themeId, true)
+  }
+
+  /**
+   * 获取当前主题
+   */
+  public getCurrentTheme(): Theme | undefined {
+    const themes = this.themeManager.getThemes()
+    return themes.find((t) => t.id === this.currentThemeId)
+  }
+
+  /**
+   * 获取所有可用主题
+   */
+  public getThemes(): Theme[] {
+    return this.themeManager.getThemes()
   }
 
   /**
@@ -164,11 +252,39 @@ export class PreviewService implements IPreviewService {
             this.updatePreview(vscode.window.activeTextEditor.document.getText())
           }
           break
+        case 'getThemes':
+          // 发送主题列表到WebView
+          this.sendThemesToWebView()
+          break
+        case 'setTheme':
+          // 更改主题
+          this.setTheme(message.themeId)
+          break
         case 'copyHtml':
           // 将HTML复制到剪贴板
           this.copyHtmlToClipboard(message.html)
           break
       }
+    })
+  }
+
+  /**
+   * 发送主题列表到WebView
+   */
+  private sendThemesToWebView(): void {
+    if (!this.previewPanel) {
+      return
+    }
+
+    const themes = this.themeManager.getThemes().map((theme) => ({
+      id: theme.id,
+      name: theme.name,
+    }))
+
+    this.previewPanel.webview.postMessage({
+      type: 'setThemes',
+      themes,
+      currentTheme: this.currentThemeId,
     })
   }
 

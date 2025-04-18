@@ -22,6 +22,10 @@
           "light": "./media/icons/wechat-preview-light.svg",
           "dark": "./media/icons/wechat-preview-dark.svg"
         }
+      },
+      {
+        "command": "markdown-to-wechat.selectTheme",
+        "title": "微信公众号: 选择预览主题"
       }
     ],
     "menus": {
@@ -32,6 +36,16 @@
           "group": "navigation"
         }
       ]
+    },
+    "configuration": {
+      "title": "Markdown to WeChat",
+      "properties": {
+        "markdown-to-wechat.theme": {
+          "type": "string",
+          "default": "default-light",
+          "description": "预览主题"
+        }
+      }
     }
   },
   "scripts": {
