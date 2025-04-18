@@ -82,7 +82,7 @@ function App({ vscode }: AppProps) {
           onClick={() => vscode.postMessage({ type: 'copyHtml', html })}
           disabled={isLoading || !html}
         >
-          复制HTML
+          复制HTML 测试
         </button>
       </div>
 

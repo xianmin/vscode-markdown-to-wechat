@@ -81,25 +81,49 @@ function getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri): s
   // 创建指向本地资源的URI
   const webviewUri = getUri(webview, extensionUri, ['media', 'webview'])
 
-  // 获取各资源文件URI
-  // HTML构建后会自动创建asset-manifest.json，使用index.html为主入口
-  const mainUri = webview.asWebviewUri(vscode.Uri.joinPath(webviewUri, 'index.html'))
+  // 获取资源文件URI (使用固定的文件名)
+  const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(webviewUri, 'assets', 'main.js'))
 
-  // 返回基本的HTML，加载React应用
+  const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(webviewUri, 'assets', 'main.css'))
+
+  // 直接内联加载WebView应用，不使用iframe
   return `
-		<!DOCTYPE html>
-		<html lang="zh-CN">
-		<head>
-			<meta charset="UTF-8">
-			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; script-src ${webview.cspSource}; style-src ${webview.cspSource};">
-			<title>微信公众号预览</title>
-		</head>
-		<body>
-			<iframe src="${mainUri}" style="width: 100%; height: 100vh; border: none;"></iframe>
-		</body>
-		</html>
-	`
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        img-src ${webview.cspSource} https:;
+        script-src ${webview.cspSource} 'unsafe-inline';
+        style-src ${webview.cspSource} 'unsafe-inline';
+        font-src ${webview.cspSource};
+      ">
+      <title>微信公众号预览</title>
+      <link href="${styleUri}" rel="stylesheet">
+    </head>
+    <body>
+      <div id="root"></div>
+      <script>
+        // 确保VSCode WebView API可用
+        if (typeof acquireVsCodeApi === 'undefined') {
+          window.acquireVsCodeApi = function() {
+            console.log('使用模拟的VSCode API');
+            return {
+              postMessage: function(msg) {
+                console.log('发送消息:', msg);
+              },
+              getState: function() { return {}; },
+              setState: function() {}
+            };
+          };
+        }
+      </script>
+      <script type="module" src="${scriptUri}"></script>
+    </body>
+    </html>
+  `
 }
 
 // 辅助函数：获取资源URI
