@@ -2,6 +2,9 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 
+// 跟踪当前预览面板
+let previewPanel: vscode.WebviewPanel | undefined = undefined
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -31,13 +34,59 @@ export function activate(context: vscode.ExtensionContext) {
     }
   )
 
+  // 监听编辑器变化事件
+  vscode.window.onDidChangeActiveTextEditor(
+    (editor) => {
+      if (editor && previewPanel && editor.document.languageId === 'markdown') {
+        // 自动更新预览
+        previewPanel.webview.postMessage({
+          type: 'setMarkdown',
+          content: editor.document.getText(),
+        })
+      }
+    },
+    null,
+    context.subscriptions
+  )
+
+  // 监听文档变化事件
+  vscode.workspace.onDidChangeTextDocument(
+    (event) => {
+      if (
+        previewPanel &&
+        vscode.window.activeTextEditor &&
+        event.document === vscode.window.activeTextEditor.document &&
+        event.document.languageId === 'markdown'
+      ) {
+        // 文档内容变化时自动更新预览
+        previewPanel.webview.postMessage({
+          type: 'setMarkdown',
+          content: event.document.getText(),
+        })
+      }
+    },
+    null,
+    context.subscriptions
+  )
+
   context.subscriptions.push(previewCommand)
 }
 
 // 创建并显示预览面板
 function showPreview(extensionUri: vscode.Uri, markdownContent: string) {
+  // 如果面板已经存在，则重用它
+  if (previewPanel) {
+    previewPanel.reveal(vscode.ViewColumn.Beside)
+    // 发送新的Markdown内容到现有面板
+    previewPanel.webview.postMessage({
+      type: 'setMarkdown',
+      content: markdownContent,
+    })
+    return
+  }
+
   // 创建WebView面板
-  const panel = vscode.window.createWebviewPanel(
+  previewPanel = vscode.window.createWebviewPanel(
     'markdownPreview',
     '微信公众号预览',
     vscode.ViewColumn.Beside,
@@ -49,14 +98,14 @@ function showPreview(extensionUri: vscode.Uri, markdownContent: string) {
   )
 
   // 设置WebView的HTML内容
-  panel.webview.html = getWebviewContent(panel.webview, extensionUri)
+  previewPanel.webview.html = getWebviewContent(previewPanel.webview, extensionUri)
 
   // 监听WebView发送的消息
-  panel.webview.onDidReceiveMessage((message) => {
+  previewPanel.webview.onDidReceiveMessage((message) => {
     switch (message.type) {
       case 'webviewReady':
         // WebView已准备好，发送Markdown内容
-        panel.webview.postMessage({
+        previewPanel?.webview.postMessage({
           type: 'setMarkdown',
           content: markdownContent,
         })
@@ -73,6 +122,11 @@ function showPreview(extensionUri: vscode.Uri, markdownContent: string) {
         }
         break
     }
+  })
+
+  // 监听面板关闭事件
+  previewPanel.onDidDispose(() => {
+    previewPanel = undefined
   })
 }
 
