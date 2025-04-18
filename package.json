@@ -17,9 +17,22 @@
     "commands": [
       {
         "command": "markdown-to-wechat.previewMarkdown",
-        "title": "微信公众号: 预览Markdown"
+        "title": "微信公众号: 预览Markdown",
+        "icon": {
+          "light": "./media/icons/wechat-preview-light.svg",
+          "dark": "./media/icons/wechat-preview-dark.svg"
+        }
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "markdown-to-wechat.previewMarkdown",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
