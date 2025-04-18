@@ -6,6 +6,7 @@
   --block-background: #f6f8fa;
   --quote-color: #666;
   --accent-color: #0076ff;
+  --accent-color-rgb: 0, 118, 255;
 }
 
 body {

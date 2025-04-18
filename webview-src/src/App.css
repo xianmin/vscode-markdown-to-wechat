@@ -85,6 +85,51 @@
   font-weight: 500;
 }
 
+.copy-selector {
+  position: relative;
+  display: flex;
+}
+
+.copy-button {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: 1px;
+}
+
+.copy-mode-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 0.5rem 0.5rem;
+  margin-left: 0;
+}
+
+.copy-options {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 200px;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.copy-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.copy-option:hover {
+  background-color: #f5f5f5;
+}
+
+.copy-option-active {
+  background-color: rgba(var(--accent-color-rgb), 0.1);
+  font-weight: 500;
+}
+
 .preview-container {
   flex: 1;
   overflow: auto;

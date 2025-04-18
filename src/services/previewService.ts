@@ -264,6 +264,14 @@ export class PreviewService implements IPreviewService {
           // 将HTML复制到剪贴板
           this.copyHtmlToClipboard(message.html)
           break
+        case 'showInfo':
+          // 显示信息消息
+          this.showInfoMessage(message.message)
+          break
+        case 'showError':
+          // 显示错误消息
+          this.showErrorMessage(message.message)
+          break
       }
     })
   }
@@ -301,6 +309,22 @@ export class PreviewService implements IPreviewService {
       const error = err as Error
       vscode.window.showErrorMessage(`复制失败: ${error.message}`)
     }
+  }
+
+  /**
+   * 显示信息消息
+   * @param message 消息内容
+   */
+  private showInfoMessage(message: string): void {
+    vscode.window.showInformationMessage(message)
+  }
+
+  /**
+   * 显示错误消息
+   * @param message 错误消息
+   */
+  private showErrorMessage(message: string): void {
+    vscode.window.showErrorMessage(message)
   }
 
   /**
