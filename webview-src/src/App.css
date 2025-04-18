@@ -1,0 +1,63 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toolbar h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.toolbar button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.toolbar button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.preview-container {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 1rem;
+  background-color: white;
+}
+
+.preview-content {
+  min-height: 100%;
+}
+
+.loading {
+  padding: 1rem;
+  color: #666;
+  text-align: center;
+}
+
+.error {
+  padding: 1rem;
+  color: #e53935;
+  border: 1px solid #e53935;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  background-color: rgba(229, 57, 53, 0.1);
+}

@@ -1,7 +1,7 @@
 {
   "name": "markdown-to-wechat",
   "displayName": "markdown-to-wechat",
-  "description": "",
+  "description": "将Markdown转换为微信公众号兼容的HTML",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.99.0"
@@ -9,13 +9,15 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "markdown-to-wechat.helloWorld",
-        "title": "Hello World"
+        "command": "markdown-to-wechat.previewMarkdown",
+        "title": "微信公众号: 预览Markdown"
       }
     ]
   },
