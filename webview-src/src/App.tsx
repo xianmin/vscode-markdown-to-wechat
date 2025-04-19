@@ -44,7 +44,14 @@ function AppContent() {
           onCopy={copyToClipboard}
         />
 
-        <Preview html={html} isLoading={isLoading} error={error} containerRef={containerRef} />
+        <div className="app-content">
+          <Preview
+            html={html}
+            isLoading={isLoading}
+            error={error}
+            containerRef={containerRef}
+          />
+        </div>
       </div>
     </AntdApp>
   )
