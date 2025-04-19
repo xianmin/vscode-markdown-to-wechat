@@ -6,13 +6,11 @@ import remarkFrontmatter from 'remark-frontmatter'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import { ThemeStyleJson } from './useThemeManager'
-import { VSCodeAPI } from './useVSCodeMessaging'
 import { rehypeApplyStyles } from '../plugins'
 
 export function useMarkdownProcessor(
   markdown: string,
   themeStyles: ThemeStyleJson = {},
-  vscode?: VSCodeAPI
 ) {
   const [html, setHtml] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -50,7 +48,14 @@ export function useMarkdownProcessor(
           .use(rehypeStringify, { allowDangerousHtml: true })
           .process(markdown)
 
-        setHtml(String(file))
+        // 获取body的样式
+        const bodyStyles = getBodyStyles(themeStyles)
+        const styleAttribute = bodyStyles ? ` style="${bodyStyles}"` : ''
+
+        // 将HTML包裹在section标签内，并应用body样式
+        const htmlWithSection = `<section${styleAttribute}>${String(file)}</section>`
+
+        setHtml(htmlWithSection)
       } catch (err) {
         setError(`转换失败: ${err instanceof Error ? err.message : String(err)}`)
         console.error('Markdown转换错误:', err)
@@ -78,6 +83,61 @@ export function useMarkdownProcessor(
     }
 
     return null
+  }
+
+  // 提取body的样式
+  const getBodyStyles = (styles: ThemeStyleJson): string => {
+    if (!styles.body) {
+      return ''
+    }
+
+    // 处理CSS变量
+    const processedStyles: Record<string, string> = {}
+    const rootVariables: Record<string, string> = {}
+
+    // 提取root变量
+    if (styles[':root']) {
+      for (const [property, value] of Object.entries(styles[':root'])) {
+        if (property.startsWith('--')) {
+          rootVariables[property] = value
+        }
+      }
+    }
+
+    // 处理body样式中的CSS变量
+    for (const [property, value] of Object.entries(styles.body)) {
+      if (property.startsWith('--')) {
+        continue
+      }
+
+      // 替换CSS变量
+      let processedValue = value
+      if (typeof value === 'string' && value.includes('var(--')) {
+        const variableRegex = /var\((--[^)]+)\)/g
+        let match
+
+        while ((match = variableRegex.exec(value)) !== null) {
+          const variableName = match[1]
+          const variableValue = rootVariables[variableName] || ''
+
+          if (variableValue) {
+            processedValue = processedValue.replace(`var(${variableName})`, variableValue)
+          }
+        }
+      }
+
+      processedStyles[property] = processedValue
+    }
+
+    // 转换为内联样式字符串
+    return Object.entries(processedStyles)
+      .map(([prop, value]) => `${kebabCase(prop)}: ${value};`)
+      .join(' ')
+  }
+
+  // 将驼峰式命名转换为kebab-case (复用自rehypeApplyStyles.ts)
+  const kebabCase = (str: string): string => {
+    return str.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1-$2').toLowerCase()
   }
 
   return { html, isLoading, error, frontmatter }

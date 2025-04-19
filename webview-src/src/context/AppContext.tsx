@@ -47,18 +47,19 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
   } = useMessageListener(vscode)
 
   // 处理Markdown
-  const { html, isLoading, error, frontmatter } = useMarkdownProcessor(
-    markdown,
-    themeStylesJson,
-    vscode
-  )
+  const { html, isLoading, error, frontmatter } = useMarkdownProcessor(markdown, themeStylesJson)
 
   // 管理主题
   const themeManager = useThemeManager(vscode)
   const { themes, currentTheme, changeTheme, themeStyles } = themeManager
 
   // 复制功能
-  const { isCopying, copyToClipboard, containerRef } = useCopyToClipboard()
+  const { isCopying, copyToClipboard: _copyToClipboard, containerRef } = useCopyToClipboard()
+
+  // 包装复制函数，传递markdown原文本
+  const copyToClipboard = () => {
+    _copyToClipboard(markdown)
+  }
 
   // 合并值
   const mergedThemes = messageThemes.length > 0 ? messageThemes : themes
