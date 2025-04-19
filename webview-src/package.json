@@ -6,22 +6,30 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --outDir ../media/webview",
-    "watch": "vite build --outDir ../media/webview --watch",
+    "build:dev": "vite build --outDir ../media/webview --mode development --config vite.dev.config.ts",
+    "watch": "vite build --outDir ../media/webview --watch --mode development --config vite.dev.config.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
+    "antd": "^5.24.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "unified": "^11.0.4",
-    "remark-parse": "^11.0.0",
+    "rehype-stringify": "^10.0.0",
+    "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
+    "remark-parse": "^11.0.0",
     "remark-rehype": "^11.0.0",
-    "rehype-stringify": "^10.0.0"
+    "unified": "^11.0.4",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
+    "@types/hast": "^3.0.4",
+    "@types/mdast": "^4.0.4",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "@types/unist": "^3.0.3",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.0.3",

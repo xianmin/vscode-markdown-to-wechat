@@ -1,0 +1,125 @@
+:root {
+  --primary-color: #0F4C81;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu',
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: #333;
+  background-color: #fff;
+  padding: 0 10px;
+}
+
+h1 {
+  display: table;
+  padding: 0 1em;
+  border-bottom: 2px solid var(--primary-color);
+  margin: 2em auto 1em;
+  color: #3f3f3f;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+h2 {
+  display: table;
+  padding: 0 0.2em;
+  margin: 4em auto 2em;
+  color: #fff;
+  background: var(--primary-color);
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+h3 {
+  padding-left: 8px;
+  border-left: 3px solid var(--primary-color);
+  margin: 2em 8px 0.75em 0;
+  color: hsl(var(--foreground));
+  font-size: 1.1em;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+h4 {
+  margin: 2em 8px 0.5em;
+  color: var(--primary-color);
+  font-size: 1em;
+  font-weight: bold;
+}
+
+h5 {
+  margin: 1.5em 8px 0.5em;
+  color: var(--primary-color);
+  font-size: 1em;
+  font-weight: bold;
+}
+
+h6 {
+  margin: 1.5em 8px 0.5em;
+  color: var(--primary-color);
+  font-size: 1em;
+  font-weight: bold;
+}
+
+p {
+  margin: 1.5em 8px;
+  letter-spacing: 0.1em;
+  color: hsl(var(--foreground));
+}
+
+blockquote {
+  font-style: normal;
+  padding: 1em;
+  border-left: 4px solid var(--primary-color);
+  border-radius: 6px;
+  color: rgba(0, 0, 0, 0.5);
+  background: var(--blockquote-background);
+  margin-bottom: 1em;
+}
+
+code {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 90%;
+  font-family: Menlo, Operator Mono, Consolas, Monaco, monospace;
+}
+
+ol {
+  padding-left: 1em;
+  margin-left: 0;
+  color: hsl(var(--foreground));
+}
+
+ul {
+  list-style: circle;
+  padding-left: 1em;
+  margin-left: 0;
+  color: hsl(var(--foreground));
+}
+
+.footnotes {
+  margin: 0.5em 8px;
+  font-size: 80%;
+  color: hsl(var(--foreground));
+}
+
+figure {
+  margin: 1.5em 8px;
+  color: hsl(var(--foreground));
+}
+
+hr {
+  border-style: solid;
+  border-width: 2px 0 0;
+  border-color: rgba(0, 0, 0, 0.1);
+  -webkit-transform-origin: 0 0;
+  -webkit-transform: scale(1, 0.5);
+  transform-origin: 0 0;
+  transform: scale(1, 0.5);
+  height: 0.4em;
+  margin: 1.5em 0;
+}
