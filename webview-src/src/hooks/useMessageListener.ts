@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { VSCodeAPI } from './useVSCodeMessaging'
-import { Theme } from './useThemeManager'
+import { Theme, ThemeStyleJson } from './useThemeManager'
 
 export function useMessageListener(vscode: VSCodeAPI) {
   const [markdown, setMarkdown] = useState<string>('')
   const [themes, setThemes] = useState<Theme[]>([])
   const [currentTheme, setCurrentTheme] = useState<string>('')
+  const [themeStylesJson, setThemeStylesJson] = useState<ThemeStyleJson>({})
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -17,6 +18,9 @@ export function useMessageListener(vscode: VSCodeAPI) {
         case 'setThemes':
           setThemes(message.themes)
           setCurrentTheme(message.currentTheme)
+          if (message.themeStylesJson) {
+            setThemeStylesJson(message.themeStylesJson)
+          }
           break
         default:
           console.log('未知消息类型', message.type)
@@ -33,5 +37,6 @@ export function useMessageListener(vscode: VSCodeAPI) {
     markdown,
     themes,
     currentTheme,
+    themeStylesJson,
   }
 }

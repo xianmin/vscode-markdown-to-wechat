@@ -121,6 +121,8 @@ export class PreviewService implements IPreviewService {
 
     // 获取当前主题CSS
     const themeCSS = this.themeManager.getThemeCSS(this.currentThemeId)
+    // 获取主题JSON数据
+    const themeStylesJson = this.themeManager.getThemeAsJson(this.currentThemeId)
 
     // 设置WebView的HTML内容
     this.previewPanel.webview.html = WebviewContentProvider.getWebviewContent(
@@ -289,10 +291,14 @@ export class PreviewService implements IPreviewService {
       name: theme.name,
     }))
 
+    // 获取当前主题的样式JSON数据
+    const themeStylesJson = this.themeManager.getThemeAsJson(this.currentThemeId)
+
     this.previewPanel.webview.postMessage({
       type: 'setThemes',
       themes,
       currentTheme: this.currentThemeId,
+      themeStylesJson: themeStylesJson,
     })
   }
 

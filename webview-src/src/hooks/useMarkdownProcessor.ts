@@ -4,13 +4,26 @@ import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
+import { ThemeStyleJson, useThemeManager } from './useThemeManager'
+import { VSCodeAPI } from './useVSCodeMessaging'
 
-export function useMarkdownProcessor(markdown: string) {
+export function useMarkdownProcessor(
+  markdown: string,
+  themeStyles: ThemeStyleJson = {},
+  vscode?: VSCodeAPI
+) {
   const [html, setHtml] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
-  // 当Markdown内容变化时，转换为HTML
+  // 获取主题管理器的方法
+  const themeManager = vscode ? useThemeManager(vscode) : null
+  const { getStylesForElement, selectorMatchesElement } = themeManager || {
+    getStylesForElement: null,
+    selectorMatchesElement: null,
+  }
+
+  // 当Markdown内容或主题样式变化时，转换为HTML
   useEffect(() => {
     const convertMarkdown = async () => {
       if (!markdown) {
@@ -33,7 +46,7 @@ export function useMarkdownProcessor(markdown: string) {
 
         // 生成HTML并应用内联样式处理
         const rawHtml = result.toString()
-        const processedHtml = processHtmlForClipboard(rawHtml)
+        const processedHtml = processHtmlForClipboard(rawHtml, themeStyles)
         setHtml(processedHtml)
       } catch (err) {
         setError(`转换失败: ${err instanceof Error ? err.message : String(err)}`)
@@ -44,7 +57,7 @@ export function useMarkdownProcessor(markdown: string) {
     }
 
     convertMarkdown()
-  }, [markdown])
+  }, [markdown, themeStyles])
 
   // 移除Front Matter
   const removeFrontMatter = (content: string): string => {
@@ -69,128 +82,31 @@ export function useMarkdownProcessor(markdown: string) {
   }
 
   // 处理HTML为微信公众号可用格式
-  const processHtmlForClipboard = (htmlContent: string): string => {
+  const processHtmlForClipboard = (htmlContent: string, styleJson: ThemeStyleJson): string => {
     // 创建一个临时元素来处理HTML
     const tempDiv = document.createElement('div')
     tempDiv.innerHTML = htmlContent
 
-    // 获取当前主题的样式
-    const applyThemeStyles = () => {
-      // 将CSS变量替换为具体的颜色值
-      const themeStyles = {
-        '--foreground-color': '#333',
-        '--background-color': '#fff',
-        '--border-color': '#ddd',
-        '--heading-color': 'red',
-        '--link-color': '#0366d6',
-        '--blockquote-color': '#666',
-        '--code-background': 'rgba(0, 0, 0, 0.06)',
-      }
-
-      // 为所有元素应用对应的主题样式
-      const applyStyles = (element: Element) => {
-        const tagStyleMap: Record<string, Partial<CSSStyleDeclaration>> = {
-          'h1, h2, h3, h4, h5, h6': { color: themeStyles['--heading-color'] },
-          'p, blockquote, ul, ol, dl, table': { margin: '0 0 16px 0' },
-          blockquote: {
-            borderLeft: `4px solid ${themeStyles['--border-color']}`,
-            padding: '0 15px',
-            color: themeStyles['--blockquote-color'],
-          },
-          a: {
-            color: themeStyles['--link-color'],
-            textDecoration: 'none',
-          },
-          code: {
-            fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace",
-            backgroundColor: themeStyles['--code-background'],
-            padding: '0.2em 0.4em',
-            borderRadius: '3px',
-            fontSize: '85%',
-          },
-          pre: {
-            backgroundColor: themeStyles['--code-background'],
-            borderRadius: '3px',
-            padding: '16px',
-            overflow: 'auto',
-          },
-        }
-
-        // 根据元素类型应用特定样式
-        const tagName = element.tagName.toLowerCase()
-        const applyTagStyles = (tag: string, styles: Partial<CSSStyleDeclaration>) => {
-          // 检查当前元素是否匹配选择器
-          const selectors = tag.split(',').map((s) => s.trim())
-          if (selectors.includes(tagName)) {
-            Object.entries(styles).forEach(([prop, value]) => {
-              if (value) {
-                ;(element as HTMLElement).style[prop as any] = value as string
-              }
-            })
-          }
-        }
-
-        // 应用所有标签样式规则
-        for (const [selector, styles] of Object.entries(tagStyleMap)) {
-          applyTagStyles(selector, styles)
-        }
-
-        // 基础样式应用给所有元素
-        ;(element as HTMLElement).style.color = themeStyles['--foreground-color']
-
-        // 特殊处理pre中的code
-        if (tagName === 'pre') {
-          const codeElements = element.querySelectorAll('code')
-          codeElements.forEach((code) => {
-            const codeElement = code as HTMLElement
-            codeElement.style.backgroundColor = 'transparent'
-            codeElement.style.padding = '0'
-          })
-        }
-
-        // 递归处理子元素
-        Array.from(element.children).forEach((child) => {
-          applyStyles(child)
-        })
-      }
-
-      // 应用样式到所有元素
-      Array.from(tempDiv.children).forEach((child) => {
-        applyStyles(child)
-      })
-    }
-
-    // 应用主题样式
-    applyThemeStyles()
-
-    // 将计算样式转为内联样式
+    // 直接将样式应用到每个元素上
     const applyInlineStyles = (element: Element) => {
-      // 获取计算样式并应用为内联样式
-      const styles = getComputedStyle(element)
-      const inlineStyles = Array.from(styles).reduce((acc, prop) => {
-        // 排除一些可能导致问题的样式属性
-        const excludedProps = [
-          'width',
-          'height',
-          'inlineSize',
-          'blockSize',
-          'webkitLogicalWidth',
-          'webkitLogicalHeight',
-        ]
-        if (excludedProps.includes(prop)) {
-          return acc
-        }
+      // 获取此元素应当应用的所有样式
+      const styles = getElementStyles(element, styleJson, tempDiv)
 
-        const value = styles.getPropertyValue(prop)
+      // 将样式直接应用到元素上
+      for (const [property, value] of Object.entries(styles)) {
         if (value) {
-          acc += `${prop}:${value};`
+          ;(element as HTMLElement).style[property as any] = value
         }
-        return acc
-      }, '')
+      }
 
-      if (inlineStyles) {
-        const currentStyle = element.getAttribute('style') || ''
-        element.setAttribute('style', `${currentStyle}${inlineStyles}`)
+      // 特殊处理pre中的code
+      if (element.tagName.toLowerCase() === 'pre') {
+        const codeElements = element.querySelectorAll('code')
+        codeElements.forEach((code) => {
+          const codeElement = code as HTMLElement
+          codeElement.style.backgroundColor = 'transparent'
+          codeElement.style.padding = '0'
+        })
       }
 
       // 递归处理子元素
@@ -199,7 +115,73 @@ export function useMarkdownProcessor(markdown: string) {
       })
     }
 
-    // 应用内联样式
+    // 获取元素应该应用的所有样式
+    const getElementStyles = (
+      element: Element,
+      styles: ThemeStyleJson,
+      root: Element
+    ): { [property: string]: string } => {
+      // 如果有主题管理器，使用其方法
+      if (getStylesForElement) {
+        return getStylesForElement(element)
+      }
+
+      // 没有主题管理器时的回退实现
+      const result: { [property: string]: string } = {}
+
+      for (const selector in styles) {
+        if (matchSelector(selector, element, root)) {
+          const selectorStyles = styles[selector as keyof typeof styles]
+
+          for (const [property, value] of Object.entries(selectorStyles)) {
+            result[property] = value
+          }
+        }
+      }
+
+      return result
+    }
+
+    // 简单的选择器匹配实现(仅在没有主题管理器时使用)
+    const matchSelector = (selector: string, element: Element, root: Element): boolean => {
+      // 如果有主题管理器，使用其方法
+      if (selectorMatchesElement) {
+        return selectorMatchesElement(selector, element)
+      }
+
+      // 没有主题管理器时的回退实现
+      const simpleMatch = (s: string): boolean => {
+        s = s.trim()
+
+        if (s === element.tagName.toLowerCase()) {
+          return true
+        }
+        if (s.startsWith('#') && element.id === s.substring(1)) {
+          return true
+        }
+        if (s.startsWith('.') && element.classList.contains(s.substring(1))) {
+          return true
+        }
+        if (s === ':root' && element === document.documentElement) {
+          return true
+        }
+        if (s === 'body' && element.parentElement === root) {
+          return true
+        }
+
+        return false
+      }
+
+      const parts = selector.split(',').map((s) => s.trim())
+      return parts.some((p) => {
+        if (!p.includes(' ') && !p.includes('>') && !p.includes('+') && !p.includes('~')) {
+          return simpleMatch(p)
+        }
+        return p.split(/[\s>+~]/).some((part) => simpleMatch(part))
+      })
+    }
+
+    // 应用内联样式到所有元素
     Array.from(tempDiv.children).forEach((child) => {
       applyInlineStyles(child)
     })
@@ -216,6 +198,42 @@ export function useMarkdownProcessor(markdown: string) {
       }
       img.removeAttribute('width')
       img.removeAttribute('height')
+    })
+
+    // CSS变量处理 - 将CSS变量替换为实际颜色值
+    const processCSSVariables = (element: HTMLElement) => {
+      const style = element.style
+
+      for (let i = 0; i < style.length; i++) {
+        const property = style[i]
+        const value = style.getPropertyValue(property)
+
+        // 如果值包含CSS变量
+        if (value.includes('var(--')) {
+          // 尝试从root元素获取变量值
+          const variableMatch = /var\(([^)]+)\)/.exec(value)
+          if (variableMatch && variableMatch[1]) {
+            const variableName = variableMatch[1].trim()
+            // 从styleJson中查找变量定义
+            if (styleJson[':root'] && styleJson[':root'][variableName]) {
+              const actualValue = styleJson[':root'][variableName]
+              // 替换变量为实际值
+              const newValue = value.replace(`var(${variableName})`, actualValue)
+              style.setProperty(property, newValue)
+            }
+          }
+        }
+      }
+
+      // 递归处理子元素
+      Array.from(element.children).forEach((child) => {
+        processCSSVariables(child as HTMLElement)
+      })
+    }
+
+    // 处理CSS变量
+    Array.from(tempDiv.children).forEach((child) => {
+      processCSSVariables(child as HTMLElement)
     })
 
     return tempDiv.innerHTML

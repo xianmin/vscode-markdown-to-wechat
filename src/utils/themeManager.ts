@@ -8,6 +8,10 @@ export interface Theme {
   path: string
 }
 
+export interface ThemeStyleJson {
+  [key: string]: { [property: string]: string }
+}
+
 export class ThemeManager {
   private themesPath: string
   private themes: Theme[] = []
@@ -53,6 +57,54 @@ export class ThemeManager {
       return fs.readFileSync(theme.path, 'utf8')
     }
     return ''
+  }
+
+  /**
+   * 获取主题CSS转换为JSON格式
+   * @param themeId 主题ID
+   */
+  public getThemeAsJson(themeId: string): ThemeStyleJson {
+    const css = this.getThemeCSS(themeId)
+    return this.cssToJson(css)
+  }
+
+  /**
+   * 将CSS内容转换为JSON对象
+   * @param css CSS内容
+   */
+  private cssToJson(css: string): ThemeStyleJson {
+    const result: ThemeStyleJson = {}
+
+    // 移除注释、换行等
+    const cleanedCSS = css.replace(/\/\*[\s\S]*?\*\//g, '').trim()
+
+    // 提取选择器和样式规则
+    const blocks = cleanedCSS.match(/([^{]+){([^}]*)}/g) || []
+
+    for (const block of blocks) {
+      const [selector, styles] = block.split('{')
+      const cleanSelector = selector.trim()
+      const styleProperties: { [key: string]: string } = {}
+
+      // 处理样式
+      const styleRules = styles.replace('}', '').trim()
+      const declarations = styleRules.split(';').filter(Boolean)
+
+      for (const declaration of declarations) {
+        const [property, value] = declaration.split(':').map((item) => item.trim())
+        if (property && value) {
+          styleProperties[property] = value
+        }
+      }
+
+      // 多个选择器（以逗号分隔）分开处理
+      const subSelectors = cleanSelector.split(',').map((s) => s.trim())
+      for (const subSelector of subSelectors) {
+        result[subSelector] = styleProperties
+      }
+    }
+
+    return result
   }
 
   /**

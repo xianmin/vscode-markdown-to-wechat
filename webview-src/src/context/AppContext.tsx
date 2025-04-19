@@ -7,7 +7,7 @@ import {
   useCopyToClipboard,
 } from '../hooks'
 import { VSCodeAPI } from '../hooks/useVSCodeMessaging'
-import { Theme } from '../hooks/useThemeManager'
+import { Theme, ThemeStyleJson } from '../hooks/useThemeManager'
 
 // 定义上下文类型
 interface AppContextType {
@@ -17,6 +17,7 @@ interface AppContextType {
   error: string | null
   themes: Theme[]
   currentTheme: string
+  themeStyles: ThemeStyleJson
   isCopying: boolean
   changeTheme: (themeId: string) => void
   copyToClipboard: () => void
@@ -38,14 +39,16 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     markdown,
     themes: messageThemes,
     currentTheme: messageCurrentTheme,
+    themeStylesJson,
   } = useMessageListener(vscode)
-  const { html, isLoading, error } = useMarkdownProcessor(markdown)
-  const { themes, currentTheme, changeTheme } = useThemeManager(vscode)
+  const { html, isLoading, error } = useMarkdownProcessor(markdown, themeStylesJson, vscode)
+  const { themes, currentTheme, changeTheme, themeStyles } = useThemeManager(vscode)
   const { isCopying, copyToClipboard, containerRef } = useCopyToClipboard(vscode)
 
   // 合并值
   const mergedThemes = messageThemes.length > 0 ? messageThemes : themes
   const mergedCurrentTheme = messageCurrentTheme || currentTheme
+  const mergedThemeStyles = Object.keys(themeStylesJson).length > 0 ? themeStylesJson : themeStyles
 
   const value = {
     markdown,
@@ -54,6 +57,7 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     error,
     themes: mergedThemes,
     currentTheme: mergedCurrentTheme,
+    themeStyles: mergedThemeStyles,
     isCopying,
     changeTheme,
     copyToClipboard,
