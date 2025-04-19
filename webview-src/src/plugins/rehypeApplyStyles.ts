@@ -16,6 +16,16 @@ interface ExtendedElement extends Element {
  */
 export function rehypeApplyStyles(themeStyles: ThemeStyleJson): Plugin<[], Root> {
   return () => (tree: Root) => {
+    // 提取:root中定义的CSS变量，用于后续的变量替换
+    const rootVariables: Record<string, string> = {}
+    if (themeStyles[':root']) {
+      for (const [property, value] of Object.entries(themeStyles[':root'])) {
+        if (property.startsWith('--')) {
+          rootVariables[property] = value
+        }
+      }
+    }
+
     // 访问树中的每个元素
     visit(tree, 'element', (node: ExtendedElement) => {
       if (!node.properties) {
@@ -23,7 +33,7 @@ export function rehypeApplyStyles(themeStyles: ThemeStyleJson): Plugin<[], Root>
       }
 
       // 获取元素的样式
-      const styles = getElementStylesForNode(node, themeStyles)
+      const styles = getElementStylesForNode(node, themeStyles, rootVariables)
 
       // 应用样式到节点
       if (Object.keys(styles).length > 0) {
@@ -71,24 +81,20 @@ export function rehypeApplyStyles(themeStyles: ThemeStyleJson): Plugin<[], Root>
 /**
  * 获取CSS变量的实际值
  * @param variableName 变量名
- * @param styles 主题样式
+ * @param rootVariables :root中定义的CSS变量
  * @returns 变量值
  */
-function getCSSVariableValue(variableName: string, styles: ThemeStyleJson): string {
-  // 从:root选择器中查找变量定义
-  if (styles[':root']) {
-    return styles[':root'][variableName] || ''
-  }
-  return ''
+function getCSSVariableValue(variableName: string, rootVariables: Record<string, string>): string {
+  return rootVariables[variableName] || ''
 }
 
 /**
  * 处理CSS变量 - 将var(--xx)替换为实际值
  * @param value CSS值
- * @param styles 主题样式
+ * @param rootVariables :root中定义的CSS变量
  * @returns 处理后的值
  */
-function processCSSVariables(value: string, styles: ThemeStyleJson): string {
+function processCSSVariables(value: string, rootVariables: Record<string, string>): string {
   if (!value?.includes('var(--')) {
     return value
   }
@@ -99,7 +105,7 @@ function processCSSVariables(value: string, styles: ThemeStyleJson): string {
 
   while ((match = variableRegex.exec(value)) !== null) {
     const variableName = match[1]
-    const variableValue = getCSSVariableValue(variableName, styles)
+    const variableValue = getCSSVariableValue(variableName, rootVariables)
 
     if (variableValue) {
       processedValue = processedValue.replace(`var(${variableName})`, variableValue)
@@ -113,11 +119,13 @@ function processCSSVariables(value: string, styles: ThemeStyleJson): string {
  * 获取元素的样式
  * @param node DOM元素
  * @param styles 主题样式
+ * @param rootVariables :root中定义的CSS变量
  * @returns 元素的样式对象
  */
 function getElementStylesForNode(
   node: ExtendedElement,
-  styles: ThemeStyleJson
+  styles: ThemeStyleJson,
+  rootVariables: Record<string, string>
 ): Record<string, string> {
   // 简化版本的选择器匹配逻辑
   const result: Record<string, string> = {}
@@ -127,8 +135,13 @@ function getElementStylesForNode(
       const selectorStyles = styles[selector as keyof typeof styles]
 
       for (const [property, value] of Object.entries(selectorStyles)) {
+        // 跳过所有CSS变量定义（即使在:root元素上）
+        if (property.startsWith('--')) {
+          continue
+        }
+
         // 处理CSS变量
-        const processedValue = processCSSVariables(value, styles)
+        const processedValue = processCSSVariables(value, rootVariables)
         result[property] = processedValue
       }
     }
@@ -166,7 +179,7 @@ function simpleNodeSelectorMatch(selector: string, node: ExtendedElement): boole
     }
 
     // root 伪类，与文档的根元素匹配
-    if (s === ':root' && (node.tagName === 'html' || !node.parent)) {
+    if (s === ':root' && node.tagName === 'html') {
       return true
     }
 
