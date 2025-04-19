@@ -15,6 +15,7 @@ interface AppContextType {
   html: string
   isLoading: boolean
   error: string | null
+  frontmatter: string | null
   themes: Theme[]
   currentTheme: string
   themeStyles: ThemeStyleJson
@@ -34,16 +35,30 @@ interface AppProviderProps {
 }
 
 export function AppProvider({ children, vscode }: AppProviderProps) {
+  // 初始化VSCode消息服务
   useVSCodeMessaging(vscode)
+
+  // 从消息中获取数据
   const {
     markdown,
     themes: messageThemes,
     currentTheme: messageCurrentTheme,
     themeStylesJson,
   } = useMessageListener(vscode)
-  const { html, isLoading, error } = useMarkdownProcessor(markdown, themeStylesJson, vscode)
-  const { themes, currentTheme, changeTheme, themeStyles } = useThemeManager(vscode)
-  const { isCopying, copyToClipboard, containerRef } = useCopyToClipboard(vscode)
+
+  // 处理Markdown
+  const { html, isLoading, error, frontmatter } = useMarkdownProcessor(
+    markdown,
+    themeStylesJson,
+    vscode
+  )
+
+  // 管理主题
+  const themeManager = useThemeManager(vscode)
+  const { themes, currentTheme, changeTheme, themeStyles } = themeManager
+
+  // 复制功能
+  const { isCopying, copyToClipboard, containerRef } = useCopyToClipboard()
 
   // 合并值
   const mergedThemes = messageThemes.length > 0 ? messageThemes : themes
@@ -55,6 +70,7 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     html,
     isLoading,
     error,
+    frontmatter,
     themes: mergedThemes,
     currentTheme: mergedCurrentTheme,
     themeStyles: mergedThemeStyles,
