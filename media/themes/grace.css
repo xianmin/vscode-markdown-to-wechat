@@ -1,0 +1,105 @@
+:root {
+  --primary-color: #c9546c;
+}
+
+body {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+  background-color: #fff9f9;
+  padding: 0 25px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  font-family: 'Century Gothic', 'Trebuchet MS', sans-serif;
+}
+
+h1 {
+  font-size: 2.2em;
+  margin-top: 0;
+  border-bottom: 1px solid #f0d6d6;
+  padding-bottom: 10px;
+}
+
+h2 {
+  font-size: 1.6em;
+  border-bottom: 1px solid #f0d6d6;
+  padding-bottom: 6px;
+}
+
+h3 {
+  font-size: 1.3em;
+}
+
+h4 {
+  font-size: 1.1em;
+}
+
+h5 {
+  font-size: 0.9em;
+}
+
+h6 {
+  font-size: 0.85em;
+  color: #888;
+}
+
+p,
+blockquote,
+ul,
+ol,
+dl,
+table {
+  margin: 0 0 20px 0;
+}
+
+blockquote {
+  border-left: 4px solid #f0d6d6;
+  padding: 0 20px;
+  color: #777;
+  margin: 0 0 20px 0;
+  font-style: italic;
+}
+
+a {
+  color: #d67b95;
+  text-decoration: none;
+  border-bottom: 1px dotted #d67b95;
+  padding-bottom: 1px;
+}
+
+a:hover {
+  border-bottom-style: solid;
+  text-decoration: none;
+}
+
+code {
+  font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+  background-color: rgba(201, 84, 108, 0.08);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 90%;
+}
+
+pre {
+  background-color: rgba(201, 84, 108, 0.08);
+  border-radius: 5px;
+  padding: 16px;
+  overflow: auto;
+  border: 1px solid #f0d6d6;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+}

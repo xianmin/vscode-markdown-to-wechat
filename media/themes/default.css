@@ -1,11 +1,5 @@
 :root {
-  --foreground-color: #333;
-  --background-color: #fff;
-  --border-color: #ddd;
-  --heading-color: red;
-  --link-color: #0366d6;
-  --blockquote-color: #666;
-  --code-background: rgba(0, 0, 0, 0.06);
+  --primary-color: #0F4C81;
 }
 
 body {
@@ -13,8 +7,8 @@ body {
     sans-serif;
   font-size: 16px;
   line-height: 1.75;
-  color: var(--foreground-color);
-  background-color: var(--background-color);
+  color: #333;
+  background-color: #fff;
   padding: 0 20px;
 }
 
@@ -24,30 +18,40 @@ h3,
 h4,
 h5,
 h6 {
-  color: var(--heading-color);
+  color: var(--primary-color);
   font-weight: 600;
   margin-top: 24px;
   margin-bottom: 16px;
 }
 
 h1 {
-  font-size: 2em;
-  margin-top: 0;
-  border-bottom: 1px solid var(--border-color);
+  display: table;
+  padding: 0 1em;
+  border-bottom: 2px solid var(--primary-color);
+  margin: 2em auto 1em;
+  color: #3f3f3f;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
 }
+
 h2 {
   font-size: 1.5em;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #ddd;
 }
+
 h3 {
   font-size: 1.25em;
 }
+
 h4 {
   font-size: 1em;
 }
+
 h5 {
   font-size: 0.875em;
 }
+
 h6 {
   font-size: 0.85em;
   color: #777;
@@ -63,14 +67,14 @@ table {
 }
 
 blockquote {
-  border-left: 4px solid var(--border-color);
+  border-left: 4px solid #ddd;
   padding: 0 15px;
-  color: var(--blockquote-color);
+  color: #666;
   margin: 0 0 16px 0;
 }
 
 a {
-  color: var(--link-color);
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -80,14 +84,14 @@ a:hover {
 
 code {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-  background-color: var(--code-background);
+  background-color: rgba(0, 0, 0, 0.06);
   padding: 0.2em 0.4em;
   border-radius: 3px;
   font-size: 85%;
 }
 
 pre {
-  background-color: var(--code-background);
+  background-color: rgba(0, 0, 0, 0.06);
   border-radius: 3px;
   padding: 16px;
   overflow: auto;
