@@ -42,7 +42,7 @@
       "properties": {
         "markdown-to-wechat.theme": {
           "type": "string",
-          "default": "default-light",
+          "default": "default",
           "description": "预览主题"
         }
       }

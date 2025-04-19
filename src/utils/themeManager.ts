@@ -60,7 +60,7 @@ export class ThemeManager {
    */
   public getDefaultTheme(): Theme | undefined {
     // 尝试获取默认主题或返回第一个主题
-    const defaultTheme = this.themes.find((t) => t.id === 'default-light')
+    const defaultTheme = this.themes.find((t) => t.id === 'default')
     return defaultTheme || this.themes[0]
   }
 }

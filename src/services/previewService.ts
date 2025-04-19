@@ -67,7 +67,7 @@ export class PreviewService implements IPreviewService {
   private readonly themeManager: ThemeManager
 
   // 当前主题ID
-  private currentThemeId: string = 'default-light'
+  private currentThemeId: string = 'default'
 
   /**
    * 构造函数
