@@ -1,6 +1,7 @@
 import { Toolbar, Preview } from './components'
 import { AppProvider, useAppContext } from './context'
 import { VSCodeAPI } from './hooks'
+import { App as AntdApp } from 'antd'
 import './App.css'
 
 interface AppProps {
@@ -31,19 +32,21 @@ function AppContent() {
   } = useAppContext()
 
   return (
-    <div className="app-container">
-      <Toolbar
-        themes={themes}
-        currentTheme={currentTheme}
-        onThemeChange={changeTheme}
-        isLoading={isLoading}
-        hasContent={!!html}
-        isCopying={isCopying}
-        onCopy={copyToClipboard}
-      />
+    <AntdApp>
+      <div className="app-container">
+        <Toolbar
+          themes={themes}
+          currentTheme={currentTheme}
+          onThemeChange={changeTheme}
+          isLoading={isLoading}
+          hasContent={!!html}
+          isCopying={isCopying}
+          onCopy={copyToClipboard}
+        />
 
-      <Preview html={html} isLoading={isLoading} error={error} containerRef={containerRef} />
-    </div>
+        <Preview html={html} isLoading={isLoading} error={error} containerRef={containerRef} />
+      </div>
+    </AntdApp>
   )
 }
 

@@ -1,3 +1,6 @@
+import { Button } from 'antd'
+import { CopyOutlined } from '@ant-design/icons'
+
 interface CopyButtonProps {
   isLoading: boolean
   hasContent: boolean
@@ -7,14 +10,14 @@ interface CopyButtonProps {
 
 export function CopyButton({ isLoading, hasContent, isCopying, onCopy }: CopyButtonProps) {
   return (
-    <div className="copy-selector">
-      <button
-        className="copy-button"
-        disabled={isLoading || !hasContent || isCopying}
-        onClick={onCopy}
-      >
-        {isCopying ? '复制中...' : '复制'}
-      </button>
-    </div>
+    <Button
+      type="primary"
+      icon={<CopyOutlined />}
+      loading={isCopying}
+      disabled={isLoading || !hasContent}
+      onClick={onCopy}
+    >
+      {isCopying ? '复制中...' : '复制'}
+    </Button>
   )
 }

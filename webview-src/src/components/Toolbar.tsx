@@ -1,6 +1,7 @@
 import { ThemeSelector } from './ThemeSelector'
 import { CopyButton } from './CopyButton'
 import { Theme } from '../hooks/useThemeManager'
+import { Space } from 'antd'
 
 interface ToolbarProps {
   themes: Theme[]
@@ -23,9 +24,8 @@ export function Toolbar({
 }: ToolbarProps) {
   return (
     <div className="toolbar">
-      <h1>微信公众号预览</h1>
-      <div className="toolbar-actions">
-        <ThemeSelector themes={themes} currentTheme={currentTheme} onThemeChange={onThemeChange} />
+      <Space>
+        <h1>微信公众号预览</h1>
 
         <CopyButton
           isLoading={isLoading}
@@ -33,6 +33,9 @@ export function Toolbar({
           isCopying={isCopying}
           onCopy={onCopy}
         />
+      </Space>
+      <div className="toolbar-actions">
+        <ThemeSelector themes={themes} currentTheme={currentTheme} onThemeChange={onThemeChange} />
       </div>
     </div>
   )

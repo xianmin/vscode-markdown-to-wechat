@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
-import { VSCodeAPI } from './useVSCodeMessaging'
+import { message } from 'antd'
 
-export function useCopyToClipboard(vscode: VSCodeAPI) {
+export function useCopyToClipboard() {
   const [isCopying, setIsCopying] = useState<boolean>(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -29,12 +29,11 @@ export function useCopyToClipboard(vscode: VSCodeAPI) {
       // 清除选择
       selection?.removeAllRanges()
 
-      vscode.postMessage({ type: 'showInfo', message: '已复制内容到剪贴板，可直接粘贴到公众号' })
+      // 使用 antd message 提示成功
+      message.success('已复制内容到剪贴板，可直接粘贴到公众号')
     } catch (err) {
-      vscode.postMessage({
-        type: 'showError',
-        message: `复制失败: ${err instanceof Error ? err.message : String(err)}`,
-      })
+      // 使用 antd message 提示错误
+      message.error(`复制失败: ${err instanceof Error ? err.message : String(err)}`)
     } finally {
       setIsCopying(false)
     }

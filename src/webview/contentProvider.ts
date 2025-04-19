@@ -50,7 +50,6 @@ export class WebviewContentProvider {
         ">
         <title>微信公众号预览</title>
         <link href="${styleUri}" rel="stylesheet">
-        ${customCSS ? `<style>${customCSS}</style>` : ''}
       </head>
       <body>
         <div id="root"></div>
