@@ -3,3 +3,6 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+
+# 开发模式生成的文件
+media/webview/assets/*-dev.*

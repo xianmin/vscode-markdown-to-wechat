@@ -50,6 +50,12 @@ export interface IPreviewService {
    * 销毁预览服务
    */
   dispose(): void
+
+  /**
+   * 判断是否为开发模式
+   * @returns 是否为开发模式
+   */
+  isDevMode(): boolean
 }
 
 /**
@@ -69,6 +75,9 @@ export class PreviewService implements IPreviewService {
   // 当前主题ID
   private currentThemeId: string = 'default'
 
+  // 是否为开发模式
+  private readonly isDevelopmentMode: boolean
+
   /**
    * 构造函数
    * @param extensionUri 扩展URI
@@ -76,6 +85,9 @@ export class PreviewService implements IPreviewService {
   constructor(extensionUri: vscode.Uri) {
     this.extensionUri = extensionUri
     this.themeManager = new ThemeManager(extensionUri.fsPath)
+
+    // 检测是否为开发模式
+    this.isDevelopmentMode = process.env.VSCODE_DEBUG_MODE === 'true'
 
     // 读取用户设置中的主题，如果有的话
     const config = vscode.workspace.getConfiguration('markdown-to-wechat')
@@ -88,6 +100,14 @@ export class PreviewService implements IPreviewService {
     } else if (defaultTheme) {
       this.currentThemeId = defaultTheme.id
     }
+  }
+
+  /**
+   * 判断是否为开发模式
+   * @returns 是否为开发模式
+   */
+  public isDevMode(): boolean {
+    return this.isDevelopmentMode
   }
 
   /**
@@ -128,7 +148,8 @@ export class PreviewService implements IPreviewService {
     this.previewPanel.webview.html = WebviewContentProvider.getWebviewContent(
       this.previewPanel.webview,
       this.extensionUri,
-      themeCSS
+      themeCSS,
+      this.isDevelopmentMode
     )
 
     // 注册消息处理
@@ -175,7 +196,8 @@ export class PreviewService implements IPreviewService {
       this.previewPanel.webview.html = WebviewContentProvider.getWebviewContent(
         this.previewPanel.webview,
         this.extensionUri,
-        themeCSS
+        themeCSS,
+        this.isDevelopmentMode
       )
 
       // 通知WebView主题已更改

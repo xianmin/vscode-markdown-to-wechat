@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --outDir ../media/webview",
-    "watch": "vite build --outDir ../media/webview --watch",
+    "build:dev": "vite build --outDir ../media/webview --mode development --config vite.dev.config.ts",
+    "watch": "vite build --outDir ../media/webview --watch --mode development --config vite.dev.config.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

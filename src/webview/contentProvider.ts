@@ -11,19 +11,28 @@ export class WebviewContentProvider {
    * @param webview WebView实例
    * @param extensionUri 扩展URI
    * @param customCSS 可选的自定义CSS内容
+   * @param isDevelopmentMode 是否为开发模式
    * @returns HTML字符串
    */
   public static getWebviewContent(
     webview: vscode.Webview,
     extensionUri: vscode.Uri,
-    customCSS?: string
+    customCSS?: string,
+    isDevelopmentMode?: boolean
   ): string {
     // 创建指向本地资源的URI
     const webviewUri = getUri(webview, extensionUri, ['media', 'webview'])
 
-    // 获取资源文件URI (使用固定的文件名)
-    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(webviewUri, 'assets', 'main.js'))
-    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(webviewUri, 'assets', 'main.css'))
+    // 确定文件前缀
+    const filePrefix = isDevelopmentMode ? 'main-dev' : 'main'
+
+    // 获取资源文件URI
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(webviewUri, 'assets', `${filePrefix}.js`)
+    )
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(webviewUri, 'assets', `${filePrefix}.css`)
+    )
 
     // 直接内联加载WebView应用，不使用iframe
     return `
