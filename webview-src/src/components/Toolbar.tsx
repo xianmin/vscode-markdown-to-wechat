@@ -1,7 +1,10 @@
 import { ThemeSelector } from './ThemeSelector'
 import { CopyButton } from './CopyButton'
+import { SettingsDrawer } from './SettingsDrawer'
 import { Theme } from '../hooks/useThemeManager'
-import { Space } from 'antd'
+import { Space, Button } from 'antd'
+import { SettingOutlined } from '@ant-design/icons'
+import { useState } from 'react'
 
 interface ToolbarProps {
   themes: Theme[]
@@ -22,6 +25,8 @@ export function Toolbar({
   isCopying,
   onCopy,
 }: ToolbarProps) {
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
   return (
     <div className="toolbar">
       <Space>
@@ -36,7 +41,10 @@ export function Toolbar({
       </Space>
       <div className="toolbar-actions">
         <ThemeSelector themes={themes} currentTheme={currentTheme} onThemeChange={onThemeChange} />
+        <Button type="text" icon={<SettingOutlined />} onClick={() => setSettingsOpen(true)} />
       </div>
+
+      <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   )
 }

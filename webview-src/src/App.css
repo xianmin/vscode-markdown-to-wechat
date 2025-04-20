@@ -23,6 +23,12 @@
   font-size: 1.5rem;
 }
 
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* 主内容区域，可以滚动 */
 .app-content {
   flex: 1;
@@ -51,7 +57,8 @@
 }
 
 /* 修复全局滚动 */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;

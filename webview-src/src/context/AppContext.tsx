@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from 'react'
+import { createContext, useContext, ReactNode, useState } from 'react'
 import {
   useVSCodeMessaging,
   useMessageListener,
@@ -8,6 +8,17 @@ import {
 } from '../hooks'
 import { VSCodeAPI } from '../hooks/useVSCodeMessaging'
 import { Theme, ThemeStyleJson } from '../hooks/useThemeManager'
+
+// 设置类型定义
+export interface AppSettings {
+  fontSize: string
+  // 后续可以添加更多设置项
+}
+
+// 默认设置
+const defaultSettings: AppSettings = {
+  fontSize: '16px',
+}
 
 // 定义上下文类型
 interface AppContextType {
@@ -20,6 +31,8 @@ interface AppContextType {
   currentTheme: string
   themeStyles: ThemeStyleJson
   isCopying: boolean
+  settings: AppSettings
+  updateSettings: (newSettings: Partial<AppSettings>) => void
   changeTheme: (themeId: string) => void
   copyToClipboard: () => void
   containerRef: React.RefObject<HTMLDivElement>
@@ -46,8 +59,28 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     themeStylesJson,
   } = useMessageListener(vscode)
 
+  // 用户设置
+  const [settings, setSettings] = useState<AppSettings>(defaultSettings)
+
+  // 更新设置的方法
+  const updateSettings = (newSettings: Partial<AppSettings>) => {
+    setSettings((prev) => ({
+      ...prev,
+      ...newSettings,
+    }))
+  }
+
+  // 合并设置到主题样式
+  const mergedThemeStyles = {
+    ...themeStylesJson,
+    body: {
+      ...(themeStylesJson.body || {}),
+      fontSize: settings.fontSize,
+    },
+  }
+
   // 处理Markdown
-  const { html, isLoading, error, frontmatter } = useMarkdownProcessor(markdown, themeStylesJson)
+  const { html, isLoading, error, frontmatter } = useMarkdownProcessor(markdown, mergedThemeStyles)
 
   // 管理主题
   const themeManager = useThemeManager(vscode)
@@ -64,7 +97,16 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
   // 合并值
   const mergedThemes = messageThemes.length > 0 ? messageThemes : themes
   const mergedCurrentTheme = messageCurrentTheme || currentTheme
-  const mergedThemeStyles = Object.keys(themeStylesJson).length > 0 ? themeStylesJson : themeStyles
+  const finalThemeStyles =
+    Object.keys(themeStylesJson).length > 0
+      ? mergedThemeStyles
+      : {
+          ...themeStyles,
+          body: {
+            ...(themeStyles.body || {}),
+            fontSize: settings.fontSize,
+          },
+        }
 
   const value = {
     markdown,
@@ -74,8 +116,10 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     frontmatter,
     themes: mergedThemes,
     currentTheme: mergedCurrentTheme,
-    themeStyles: mergedThemeStyles,
+    themeStyles: finalThemeStyles,
     isCopying,
+    settings,
+    updateSettings,
     changeTheme,
     copyToClipboard,
     containerRef,
