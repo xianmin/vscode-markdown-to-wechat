@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { WebviewContentProvider } from '../webview/contentProvider'
 import { Theme, ThemeManager } from '../utils/themeManager'
+import { AppSettings } from './settingsService'
 
 /**
  * 预览服务接口
@@ -56,6 +57,24 @@ export interface IPreviewService {
    * @returns 是否为开发模式
    */
   isDevMode(): boolean
+
+  /**
+   * 当WebView创建时触发事件
+   * @param listener 监听器函数
+   */
+  onWebViewCreated(listener: (panel: vscode.WebviewPanel) => void): void
+
+  /**
+   * 向所有WebView发送消息
+   * @param message 要发送的消息对象
+   */
+  postMessageToAllWebViews(message: any): void
+
+  /**
+   * 发送设置到WebView
+   * @param settings 应用设置
+   */
+  sendSettingsToWebView(settings: AppSettings): void
 }
 
 /**
@@ -77,6 +96,9 @@ export class PreviewService implements IPreviewService {
 
   // 是否为开发模式
   private readonly isDevelopmentMode: boolean
+
+  // 添加WebView创建事件监听器数组
+  private webviewCreatedListeners: ((panel: vscode.WebviewPanel) => void)[] = []
 
   /**
    * 构造函数
@@ -154,6 +176,11 @@ export class PreviewService implements IPreviewService {
 
     // 注册消息处理
     this.registerMessageHandlers(initialContent)
+
+    // 调用WebView创建事件监听器
+    for (const listener of this.webviewCreatedListeners) {
+      listener(this.previewPanel)
+    }
 
     // 监听面板关闭事件
     this.previewPanel.onDidDispose(() => {
@@ -362,6 +389,37 @@ export class PreviewService implements IPreviewService {
     if (this.previewPanel) {
       this.previewPanel.dispose()
       this.previewPanel = undefined
+    }
+  }
+
+  /**
+   * 当WebView创建时触发事件
+   * @param listener 监听器函数
+   */
+  public onWebViewCreated(listener: (panel: vscode.WebviewPanel) => void): void {
+    this.webviewCreatedListeners.push(listener)
+  }
+
+  /**
+   * 向所有WebView发送消息
+   * @param message 要发送的消息对象
+   */
+  public postMessageToAllWebViews(message: any): void {
+    if (this.previewPanel) {
+      this.previewPanel.webview.postMessage(message)
+    }
+  }
+
+  /**
+   * 发送设置到WebView
+   * @param settings 应用设置
+   */
+  public sendSettingsToWebView(settings: AppSettings): void {
+    if (this.previewPanel) {
+      this.previewPanel.webview.postMessage({
+        type: 'settings',
+        settings: settings,
+      })
     }
   }
 }

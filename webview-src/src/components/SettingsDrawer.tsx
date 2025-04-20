@@ -1,4 +1,5 @@
-import { Drawer, Select, Space, Typography, Row, Col } from 'antd'
+import { Drawer, Select, Space, Typography, Row, Col, Button, message } from 'antd'
+import { SaveOutlined } from '@ant-design/icons'
 import { useAppContext } from '../context'
 
 const { Option } = Select
@@ -10,10 +11,41 @@ interface SettingsDrawerProps {
 }
 
 export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
-  const { settings, updateSettings } = useAppContext()
+  const { settings, updateSettings, saveSettings } = useAppContext()
+
+  // 保存设置到VSCode
+  const handleSaveSettings = () => {
+    saveSettings()
+    message.success('设置已保存')
+    onClose()
+  }
+
+  // 自定义标题栏，包含保存按钮
+  const drawerTitle = (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+      }}
+    >
+      <span>设置</span>
+      <Button type="primary" icon={<SaveOutlined />} size="small" onClick={handleSaveSettings}>
+        保存
+      </Button>
+    </div>
+  )
 
   return (
-    <Drawer title="设置" placement="right" onClose={onClose} open={open} width={300}>
+    <Drawer
+      title={drawerTitle}
+      placement="right"
+      onClose={onClose}
+      open={open}
+      width={300}
+      extra={false}
+    >
       <Space direction="vertical" style={{ width: '100%' }}>
         <Row align="middle" justify="space-between">
           <Col>

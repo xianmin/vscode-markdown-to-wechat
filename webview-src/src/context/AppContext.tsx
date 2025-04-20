@@ -1,24 +1,15 @@
-import { createContext, useContext, ReactNode, useState } from 'react'
+import { createContext, useContext, ReactNode } from 'react'
 import {
   useVSCodeMessaging,
   useMessageListener,
   useMarkdownProcessor,
   useThemeManager,
   useCopyToClipboard,
+  useSettingsManager,
 } from '../hooks'
 import { VSCodeAPI } from '../hooks/useVSCodeMessaging'
 import { Theme, ThemeStyleJson } from '../hooks/useThemeManager'
-
-// 设置类型定义
-export interface AppSettings {
-  fontSize: string
-  // 后续可以添加更多设置项
-}
-
-// 默认设置
-const defaultSettings: AppSettings = {
-  fontSize: '16px',
-}
+import { AppSettings } from '../types/settings'
 
 // 定义上下文类型
 interface AppContextType {
@@ -33,6 +24,7 @@ interface AppContextType {
   isCopying: boolean
   settings: AppSettings
   updateSettings: (newSettings: Partial<AppSettings>) => void
+  saveSettings: () => void
   changeTheme: (themeId: string) => void
   copyToClipboard: () => void
   containerRef: React.RefObject<HTMLDivElement>
@@ -57,18 +49,11 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     themes: messageThemes,
     currentTheme: messageCurrentTheme,
     themeStylesJson,
+    settings: messageSettings,
   } = useMessageListener(vscode)
 
-  // 用户设置
-  const [settings, setSettings] = useState<AppSettings>(defaultSettings)
-
-  // 更新设置的方法
-  const updateSettings = (newSettings: Partial<AppSettings>) => {
-    setSettings((prev) => ({
-      ...prev,
-      ...newSettings,
-    }))
-  }
+  // 设置管理
+  const { settings, updateSettings, saveSettings } = useSettingsManager(vscode, messageSettings)
 
   // 合并设置到主题样式
   const mergedThemeStyles = {
@@ -120,6 +105,7 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     isCopying,
     settings,
     updateSettings,
+    saveSettings,
     changeTheme,
     copyToClipboard,
     containerRef,
