@@ -14,6 +14,9 @@ export function activate(context: vscode.ExtensionContext) {
   const settingsService = new SettingsService(context)
   const previewService = new PreviewService(context.extensionUri)
 
+  // 注册事件监听
+  previewService.registerEventListeners(context)
+
   // 设置WebView消息处理
   previewService.onWebViewCreated((webviewPanel) => {
     // 发送初始设置给WebView
@@ -48,8 +51,11 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((event) => {
       // 检查是否是我们的配置项发生了变化
-      if (event.affectsConfiguration('markdown-to-wechat.fontSize')) {
-        console.log('监测到字体大小设置变更')
+      if (
+        event.affectsConfiguration('markdown-to-wechat.fontSize') ||
+        event.affectsConfiguration('markdown-to-wechat.headingNumberingStyle')
+      ) {
+        console.log('监测到设置变更')
         // 获取新的设置并广播
         const updatedSettings = settingsService.getSettings()
         console.log('新的设置值:', updatedSettings)

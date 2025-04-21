@@ -9,11 +9,16 @@ import { AppSettings } from '../types/settings'
  * @returns 设置管理器对象
  */
 export function useSettingsManager(vscode: VSCodeAPI, initialSettings: AppSettings) {
-  const [settings, setSettings] = useState<AppSettings>(initialSettings || { fontSize: '16px' })
+  const [settings, setSettings] = useState<AppSettings>(
+    initialSettings || {
+      fontSize: '16px',
+      headingNumberingStyle: 'number-dot',
+    }
+  )
 
   // 当接收到新的设置时更新本地状态
   useEffect(() => {
-    if (initialSettings && initialSettings.fontSize) {
+    if (initialSettings) {
       console.log('设置管理器接收到新设置:', initialSettings)
       setSettings(initialSettings)
     }

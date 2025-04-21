@@ -65,7 +65,11 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
   }
 
   // 处理Markdown
-  const { html, isLoading, error, frontmatter } = useMarkdownProcessor(markdown, mergedThemeStyles)
+  const { html, isLoading, error, frontmatter } = useMarkdownProcessor(
+    markdown,
+    mergedThemeStyles,
+    settings
+  )
 
   // 管理主题
   const themeManager = useThemeManager(vscode)

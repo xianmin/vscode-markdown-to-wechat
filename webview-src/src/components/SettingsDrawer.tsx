@@ -1,4 +1,4 @@
-import { Drawer, Select, Space, Typography, Row, Col, Button, message } from 'antd'
+import { Drawer, Select, Space, Typography, Row, Col, Button, message, Divider } from 'antd'
 import { SaveOutlined } from '@ant-design/icons'
 import { useAppContext } from '../context'
 
@@ -64,6 +64,27 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
               <Option value="16px">推荐 (16px)</Option>
               <Option value="17px">稍大 (17px)</Option>
               <Option value="18px">更大 (18px)</Option>
+            </Select>
+          </Col>
+        </Row>
+
+        <Divider style={{ margin: '12px 0' }} />
+
+        <Row align="middle" justify="space-between">
+          <Col>
+            <Title level={5} style={{ margin: 0 }}>
+              标题编号
+            </Title>
+          </Col>
+          <Col>
+            <Select
+              style={{ width: '120px' }}
+              value={settings.headingNumberingStyle}
+              onChange={(value) => updateSettings({ headingNumberingStyle: value })}
+            >
+              <Option value="none">不使用</Option>
+              <Option value="number-dot">1. 2. 3.</Option>
+              <Option value="chinese-dot">一、二、三、</Option>
             </Select>
           </Col>
         </Row>

@@ -3,17 +3,20 @@ import * as vscode from 'vscode'
 // 定义设置类型
 export interface AppSettings {
   fontSize: string
+  headingNumberingStyle: string
   // 后续可添加更多设置
 }
 
 // 默认设置
 export const defaultSettings: AppSettings = {
   fontSize: '16px',
+  headingNumberingStyle: 'number-dot', // 默认使用数字点形式
 }
 
 // 配置键常量
 const CONFIG_SECTION = 'markdown-to-wechat'
 const FONT_SIZE_KEY = 'fontSize'
+const HEADING_NUMBERING_STYLE_KEY = 'headingNumberingStyle'
 
 // 设置管理服务
 export class SettingsService {
@@ -29,6 +32,10 @@ export class SettingsService {
 
     return {
       fontSize: config.get<string>(FONT_SIZE_KEY, defaultSettings.fontSize),
+      headingNumberingStyle: config.get<string>(
+        HEADING_NUMBERING_STYLE_KEY,
+        defaultSettings.headingNumberingStyle
+      ),
     }
   }
 
@@ -41,6 +48,11 @@ export class SettingsService {
       await config.update(FONT_SIZE_KEY, newSettings.fontSize, true)
     }
 
+    // 更新二级标题计数样式
+    if (newSettings.headingNumberingStyle !== undefined) {
+      await config.update(HEADING_NUMBERING_STYLE_KEY, newSettings.headingNumberingStyle, true)
+    }
+
     // 返回更新后的设置
     return this.getSettings()
   }
@@ -51,6 +63,7 @@ export class SettingsService {
 
     // 重置所有设置为默认值
     await config.update(FONT_SIZE_KEY, undefined, true) // undefined 表示恢复默认值
+    await config.update(HEADING_NUMBERING_STYLE_KEY, undefined, true)
 
     return this.getSettings()
   }

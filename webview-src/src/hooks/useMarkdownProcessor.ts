@@ -6,18 +6,20 @@ import remarkFrontmatter from 'remark-frontmatter'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import { ThemeStyleJson } from './useThemeManager'
-import { rehypeApplyStyles } from '../plugins'
+import { AppSettings } from '../types/settings'
+import { rehypeApplyStyles, remarkNumberedHeadings } from '../plugins'
 
 export function useMarkdownProcessor(
   markdown: string,
   themeStyles: ThemeStyleJson = {},
+  settings: AppSettings = { fontSize: '16px', headingNumberingStyle: 'number-dot' }
 ) {
   const [html, setHtml] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [frontmatter, setFrontmatter] = useState<string | null>(null)
 
-  // 当Markdown内容或主题样式变化时，转换为HTML
+  // 当Markdown内容、主题样式或设置变化时，转换为HTML
   useEffect(() => {
     const convertMarkdown = async () => {
       if (!markdown) {
@@ -43,6 +45,7 @@ export function useMarkdownProcessor(
           .use(remarkParse)
           .use(remarkFrontmatter) // 在AST中处理frontmatter，这样它不会被当作正文内容解析
           .use(remarkGfm)
+          .use(remarkNumberedHeadings({ style: settings.headingNumberingStyle })) // 为二级标题添加序号前缀
           .use(remarkRehype, { allowDangerousHtml: true })
           .use(rehypeApplyStyles(themeStyles))
           .use(rehypeStringify, { allowDangerousHtml: true })
@@ -65,7 +68,7 @@ export function useMarkdownProcessor(
     }
 
     convertMarkdown()
-  }, [markdown, themeStyles])
+  }, [markdown, themeStyles, settings]) // 添加settings作为依赖
 
   // 提取frontmatter内容，仅用于导出以备后用
   // 这个函数只负责提取内容，不影响Markdown的解析过程

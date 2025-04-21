@@ -63,6 +63,21 @@
             "稍大 (17px)",
             "更大 (18px)"
           ]
+        },
+        "markdown-to-wechat.headingNumberingStyle": {
+          "type": "string",
+          "default": "number-dot",
+          "description": "标题编号",
+          "enum": [
+            "none",
+            "number-dot",
+            "chinese-dot"
+          ],
+          "enumDescriptions": [
+            "不使用",
+            "数字点形式 (1. 2. 3.)",
+            "中文点形式 (一、二、三、)"
+          ]
         }
       }
     }
