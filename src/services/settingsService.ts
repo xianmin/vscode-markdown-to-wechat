@@ -4,6 +4,7 @@ import * as vscode from 'vscode'
 export interface AppSettings {
   fontSize: string
   headingNumberingStyle: string
+  primaryColor: string
   // 后续可添加更多设置
 }
 
@@ -11,12 +12,14 @@ export interface AppSettings {
 export const defaultSettings: AppSettings = {
   fontSize: '16px',
   headingNumberingStyle: 'number-dot', // 默认使用数字点形式
+  primaryColor: '#017fc0', // 默认蓝色
 }
 
 // 配置键常量
 const CONFIG_SECTION = 'markdown-to-wechat'
 const FONT_SIZE_KEY = 'fontSize'
 const HEADING_NUMBERING_STYLE_KEY = 'headingNumberingStyle'
+const PRIMARY_COLOR_KEY = 'primaryColor'
 
 // 设置管理服务
 export class SettingsService {
@@ -36,6 +39,7 @@ export class SettingsService {
         HEADING_NUMBERING_STYLE_KEY,
         defaultSettings.headingNumberingStyle
       ),
+      primaryColor: config.get<string>(PRIMARY_COLOR_KEY, defaultSettings.primaryColor),
     }
   }
 
@@ -53,6 +57,11 @@ export class SettingsService {
       await config.update(HEADING_NUMBERING_STYLE_KEY, newSettings.headingNumberingStyle, true)
     }
 
+    // 更新主题颜色
+    if (newSettings.primaryColor !== undefined) {
+      await config.update(PRIMARY_COLOR_KEY, newSettings.primaryColor, true)
+    }
+
     // 返回更新后的设置
     return this.getSettings()
   }
@@ -64,6 +73,7 @@ export class SettingsService {
     // 重置所有设置为默认值
     await config.update(FONT_SIZE_KEY, undefined, true) // undefined 表示恢复默认值
     await config.update(HEADING_NUMBERING_STYLE_KEY, undefined, true)
+    await config.update(PRIMARY_COLOR_KEY, undefined, true)
 
     return this.getSettings()
   }

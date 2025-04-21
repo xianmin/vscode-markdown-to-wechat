@@ -13,6 +13,7 @@ export function useSettingsManager(vscode: VSCodeAPI, initialSettings: AppSettin
     initialSettings || {
       fontSize: '16px',
       headingNumberingStyle: 'number-dot',
+      primaryColor: '#017fc0',
     }
   )
 

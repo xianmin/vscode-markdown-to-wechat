@@ -91,6 +91,11 @@
             "中文点形式 (一、二、三、)"
           ]
         },
+        "markdown-to-wechat.primaryColor": {
+          "type": "string",
+          "default": "#017fc0",
+          "description": "主题主色调，用于设置链接和主要UI元素的颜色"
+        },
         "markdown-to-wechat.themesStoragePath": {
           "type": "string",
           "description": "自定义主题文件的存储路径，留空时使用VS Code扩展全局存储位置",

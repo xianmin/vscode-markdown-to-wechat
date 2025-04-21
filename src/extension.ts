@@ -58,7 +58,8 @@ export function activate(context: vscode.ExtensionContext) {
       // 检查是否是我们的配置项发生了变化
       if (
         event.affectsConfiguration('markdown-to-wechat.fontSize') ||
-        event.affectsConfiguration('markdown-to-wechat.headingNumberingStyle')
+        event.affectsConfiguration('markdown-to-wechat.headingNumberingStyle') ||
+        event.affectsConfiguration('markdown-to-wechat.primaryColor')
       ) {
         // 获取新的设置并广播
         const updatedSettings = settingsService.getSettings()

@@ -15,5 +15,11 @@ export interface AppSettings {
    */
   headingNumberingStyle: string
 
+  /**
+   * 主题主色调
+   * 默认为 '#017fc0'
+   */
+  primaryColor: string
+
   // 未来可以扩展更多设置项
 }

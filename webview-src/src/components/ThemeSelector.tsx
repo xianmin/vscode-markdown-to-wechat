@@ -25,7 +25,7 @@ export function ThemeSelector({ themes, currentTheme, onThemeChange }: ThemeSele
             padding: '0 11px',
             backgroundColor: '#fafafa',
             borderRight: '1px solid #d9d9d9',
-            fontSize: '14px',
+            fontSize: '16px',
             height: '30px',
             lineHeight: '30px',
           }}

@@ -62,6 +62,10 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
       ...(themeStylesJson.body || {}),
       fontSize: settings.fontSize,
     },
+    ':root': {
+      ...(themeStylesJson[':root'] || {}),
+      '--primary-color': settings.primaryColor,
+    },
   }
 
   // 处理Markdown
@@ -94,6 +98,10 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
           body: {
             ...(themeStyles.body || {}),
             fontSize: settings.fontSize,
+          },
+          ':root': {
+            ...(themeStyles[':root'] || {}),
+            '--primary-color': settings.primaryColor,
           },
         }
 
