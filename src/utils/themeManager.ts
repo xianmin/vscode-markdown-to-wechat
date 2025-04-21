@@ -191,13 +191,29 @@ export class ThemeManager {
   private loadThemes() {
     this.themes = []
 
-    // 先加载用户主题
-    this.loadThemesFromFolder(this.userThemesPath)
+    // 检查用户主题文件夹是否有CSS文件
+    const userThemesExist = this.checkThemesExist(this.userThemesPath)
 
-    // 再加载默认主题（不重复添加）
-    if (this.defaultThemesPath !== this.userThemesPath) {
-      this.loadThemesFromFolder(this.defaultThemesPath, true)
+    // 如果用户主题文件夹中没有CSS文件，则复制默认主题
+    if (!userThemesExist) {
+      this.copyDefaultThemesToUserFolder()
     }
+
+    // 加载用户主题
+    this.loadThemesFromFolder(this.userThemesPath)
+  }
+
+  /**
+   * 检查指定文件夹中是否存在CSS文件
+   * @param folderPath 文件夹路径
+   */
+  private checkThemesExist(folderPath: string): boolean {
+    if (!fs.existsSync(folderPath)) {
+      return false
+    }
+
+    const files = fs.readdirSync(folderPath)
+    return files.some((file) => file.endsWith('.css'))
   }
 
   /**
@@ -219,7 +235,7 @@ export class ThemeManager {
 
           this.themes.push({
             id,
-            name: id.charAt(0).toUpperCase() + id.slice(1).replace(/-/g, ' '),
+            name: id,
             path: path.join(folderPath, file),
           })
         }

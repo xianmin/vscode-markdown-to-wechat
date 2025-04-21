@@ -54,8 +54,8 @@
       "properties": {
         "markdown-to-wechat.theme": {
           "type": "string",
-          "default": "default",
-          "description": "预览主题"
+          "default": "经典",
+          "description": "默认主题"
         },
         "markdown-to-wechat.fontSize": {
           "type": "string",

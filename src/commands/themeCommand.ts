@@ -112,9 +112,6 @@ export class ThemeCommandHandler {
     try {
       // 使用预览服务重新加载主题
       this.previewService.reloadThemes()
-
-      // 显示成功消息
-      vscode.window.showInformationMessage('主题列表已刷新')
     } catch (error) {
       const err = error as Error
       vscode.window.showErrorMessage(`刷新主题列表失败: ${err.message}`)
