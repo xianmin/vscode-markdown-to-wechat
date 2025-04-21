@@ -37,6 +37,21 @@ export interface IPreviewService {
   getThemes(): Theme[]
 
   /**
+   * 获取用户主题文件夹路径
+   */
+  getUserThemesPath(): string
+
+  /**
+   * 获取默认主题文件夹路径
+   */
+  getDefaultThemesPath(): string
+
+  /**
+   * 重新加载主题
+   */
+  reloadThemes(): void
+
+  /**
    * 注册事件监听
    * @param context 扩展上下文
    */
@@ -248,6 +263,36 @@ export class PreviewService implements IPreviewService {
    */
   public getThemes(): Theme[] {
     return this.themeManager.getThemes()
+  }
+
+  /**
+   * 获取用户主题文件夹路径
+   */
+  public getUserThemesPath(): string {
+    return this.themeManager.getUserThemesPath()
+  }
+
+  /**
+   * 获取默认主题文件夹路径
+   */
+  public getDefaultThemesPath(): string {
+    return ThemeManager.getDefaultUserThemesPath()
+  }
+
+  /**
+   * 重新加载主题
+   */
+  public reloadThemes(): void {
+    // 重新加载主题
+    this.themeManager.reloadThemes()
+
+    // 更新主题列表
+    if (this.previewPanel) {
+      this.sendThemesToWebView()
+    }
+
+    // 通知主题已重新加载
+    vscode.window.showInformationMessage(`已加载 ${this.themeManager.getThemes().length} 个主题`)
   }
 
   /**

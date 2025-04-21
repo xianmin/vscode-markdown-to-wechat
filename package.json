@@ -17,7 +17,7 @@
     "commands": [
       {
         "command": "markdown-to-wechat.previewMarkdown",
-        "title": "微信公众号: 预览Markdown",
+        "title": "markdown-to-wechat: 预览",
         "icon": {
           "light": "./media/icons/wechat-preview-light.svg",
           "dark": "./media/icons/wechat-preview-dark.svg"
@@ -25,7 +25,19 @@
       },
       {
         "command": "markdown-to-wechat.selectTheme",
-        "title": "微信公众号: 选择预览主题"
+        "title": "markdown-to-wechat: 选择预览主题"
+      },
+      {
+        "command": "markdown-to-wechat.openThemesFolder",
+        "title": "markdown-to-wechat: 打开主题文件夹"
+      },
+      {
+        "command": "markdown-to-wechat.refreshThemes",
+        "title": "markdown-to-wechat: 刷新主题列表"
+      },
+      {
+        "command": "markdown-to-wechat.resetThemesPath",
+        "title": "markdown-to-wechat: 重置主题路径到默认值"
       }
     ],
     "menus": {
@@ -78,6 +90,11 @@
             "数字点形式 (1. 2. 3.)",
             "中文点形式 (一、二、三、)"
           ]
+        },
+        "markdown-to-wechat.themesStoragePath": {
+          "type": "string",
+          "description": "自定义主题文件的存储路径，留空时使用VS Code扩展全局存储位置",
+          "markdownDescription": "自定义主题文件的存储路径，可以在此路径添加或修改CSS主题文件。默认使用VS Code扩展全局存储位置，可通过命令\"markdown-to-wechat: 打开主题文件夹\"访问。"
         }
       }
     }

@@ -4,11 +4,16 @@ import { PreviewService } from './services/previewService'
 import { SettingsService } from './services/settingsService'
 import { PreviewCommandHandler } from './commands/previewCommand'
 import { ThemeCommandHandler } from './commands/themeCommand'
+import { ThemeManager } from './utils/themeManager'
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Markdown to WeChat extension is now active')
+  // 初始化ThemeManager的全局存储路径
+  ThemeManager.initGlobalStorage(context)
+
+  // 初始化默认的主题存储路径
+  initializeDefaultThemesPath()
 
   // 创建服务
   const settingsService = new SettingsService(context)
@@ -55,10 +60,8 @@ export function activate(context: vscode.ExtensionContext) {
         event.affectsConfiguration('markdown-to-wechat.fontSize') ||
         event.affectsConfiguration('markdown-to-wechat.headingNumberingStyle')
       ) {
-        console.log('监测到设置变更')
         // 获取新的设置并广播
         const updatedSettings = settingsService.getSettings()
-        console.log('新的设置值:', updatedSettings)
 
         // 广播到所有 WebView
         previewService.postMessageToAllWebViews({
@@ -76,6 +79,32 @@ export function activate(context: vscode.ExtensionContext) {
   // 注册命令
   previewCommandHandler.registerCommands(context)
   themeCommandHandler.registerCommands(context)
+}
+
+/**
+ * 初始化默认的主题存储路径
+ */
+function initializeDefaultThemesPath(): void {
+  try {
+    // 获取配置
+    const config = vscode.workspace.getConfiguration('markdown-to-wechat')
+    const currentThemesPath = config.get<string>('themesStoragePath')
+    const defaultPath = ThemeManager.getDefaultUserThemesPath()
+
+    // 无论如何，我们都希望确保这个配置值已设置
+    // 如果未设置或为空，则设置为默认值
+    if (!currentThemesPath || currentThemesPath.trim() === '') {
+      // 更新全局设置
+      config
+        .update('themesStoragePath', defaultPath, vscode.ConfigurationTarget.Global)
+        .then(undefined, (error) => {
+          console.error('设置默认主题存储路径失败:', error)
+        })
+    }
+  } catch (error) {
+    const err = error as Error
+    console.error('初始化默认主题路径失败:', err.message)
+  }
 }
 
 // This method is called when your extension is deactivated
