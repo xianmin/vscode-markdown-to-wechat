@@ -59,9 +59,10 @@
         },
         "markdown-to-wechat.fontSize": {
           "type": "string",
-          "default": "16px",
+          "default": "",
           "description": "预览文本的字体大小",
           "enum": [
+            "",
             "14px",
             "15px",
             "16px",
@@ -69,6 +70,7 @@
             "18px"
           ],
           "enumDescriptions": [
+            "默认",
             "更小 (14px)",
             "稍小 (15px)",
             "推荐 (16px)",
@@ -78,10 +80,10 @@
         },
         "markdown-to-wechat.headingNumberingStyle": {
           "type": "string",
-          "default": "number-dot",
+          "default": "",
           "description": "标题编号",
           "enum": [
-            "none",
+            "",
             "number-dot",
             "chinese-dot"
           ],
@@ -93,7 +95,7 @@
         },
         "markdown-to-wechat.primaryColor": {
           "type": "string",
-          "default": "#017fc0",
+          "default": "",
           "description": "主题主色调，用于设置链接和主要UI元素的颜色"
         },
         "markdown-to-wechat.themesStoragePath": {

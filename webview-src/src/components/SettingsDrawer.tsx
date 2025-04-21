@@ -13,6 +13,7 @@ interface SettingsDrawerProps {
 
 // 预定义颜色选项
 const colorOptions = [
+  { label: '默认', value: '' },
   { label: '默认蓝', value: '#017fc0' },
   { label: '深沉绿', value: '#0e7a3b' },
   { label: '温暖橙', value: '#f26b24' },
@@ -91,6 +92,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
               value={settings.fontSize}
               onChange={(value) => updateSettings({ fontSize: value })}
             >
+              <Option value="">默认</Option>
               <Option value="14px">更小 (14px)</Option>
               <Option value="15px">稍小 (15px)</Option>
               <Option value="16px">推荐 (16px)</Option>
@@ -114,7 +116,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
               value={settings.headingNumberingStyle}
               onChange={(value) => updateSettings({ headingNumberingStyle: value })}
             >
-              <Option value="none">不使用</Option>
+              <Option value="">不使用</Option>
               <Option value="number-dot">1. 2. 3.</Option>
               <Option value="chinese-dot">一、二、三、</Option>
             </Select>

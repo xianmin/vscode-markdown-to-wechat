@@ -9,7 +9,7 @@ import { Plugin } from 'unified'
 export interface HeadingNumberingOptions {
   /**
    * 编号样式
-   * 'none': 不添加编号
+   * '': 不添加编号
    * 'number-dot': 使用 "1. " 格式的编号，多级标题使用 "1.1, 1.1.1" 等格式
    * 'chinese-dot': 使用 "一、" 格式的中文编号，三级和四级标题使用 "1.1, 1.1.1" 等格式
    */
@@ -53,7 +53,7 @@ export function remarkNumberedHeadings(options = { style: 'number-dot' }): Plugi
     // transformer
     return (tree: Node) => {
       // 如果配置为不使用编号，直接返回原始树
-      if (options.style === 'none') {
+      if (options.style === '') {
         return tree
       }
 

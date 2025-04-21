@@ -12,7 +12,7 @@ import { rehypeApplyStyles, remarkNumberedHeadings } from '../plugins'
 export function useMarkdownProcessor(
   markdown: string,
   themeStyles: ThemeStyleJson = {},
-  settings: AppSettings = { fontSize: '16px', headingNumberingStyle: 'number-dot' }
+  settings: AppSettings = { fontSize: '', headingNumberingStyle: '', primaryColor: '' }
 ) {
   const [html, setHtml] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)

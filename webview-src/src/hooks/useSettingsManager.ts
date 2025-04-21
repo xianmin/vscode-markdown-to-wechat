@@ -11,9 +11,9 @@ import { AppSettings } from '../types/settings'
 export function useSettingsManager(vscode: VSCodeAPI, initialSettings: AppSettings) {
   const [settings, setSettings] = useState<AppSettings>(
     initialSettings || {
-      fontSize: '16px',
+      fontSize: '',
       headingNumberingStyle: 'number-dot',
-      primaryColor: '#017fc0',
+      primaryColor: '',
     }
   )
 

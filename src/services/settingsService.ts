@@ -10,9 +10,9 @@ export interface AppSettings {
 
 // 默认设置
 export const defaultSettings: AppSettings = {
-  fontSize: '16px',
+  fontSize: '',
   headingNumberingStyle: 'number-dot', // 默认使用数字点形式
-  primaryColor: '#017fc0', // 默认蓝色
+  primaryColor: '', // 默认为空
 }
 
 // 配置键常量

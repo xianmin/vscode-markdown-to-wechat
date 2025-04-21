@@ -60,11 +60,11 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     ...themeStylesJson,
     body: {
       ...(themeStylesJson.body || {}),
-      fontSize: settings.fontSize,
+      ...(settings.fontSize ? { fontSize: settings.fontSize } : {}),
     },
     ':root': {
       ...(themeStylesJson[':root'] || {}),
-      '--primary-color': settings.primaryColor,
+      ...(settings.primaryColor ? { '--primary-color': settings.primaryColor } : {}),
     },
   }
 
@@ -97,11 +97,11 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
           ...themeStyles,
           body: {
             ...(themeStyles.body || {}),
-            fontSize: settings.fontSize,
+            ...(settings.fontSize ? { fontSize: settings.fontSize } : {}),
           },
           ':root': {
             ...(themeStyles[':root'] || {}),
-            '--primary-color': settings.primaryColor,
+            ...(settings.primaryColor ? { '--primary-color': settings.primaryColor } : {}),
           },
         }
 

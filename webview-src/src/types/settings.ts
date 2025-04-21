@@ -9,7 +9,7 @@ export interface AppSettings {
 
   /**
    * 二级标题计数形式
-   * 'none': 不添加计数
+   * '': 不添加计数
    * 'number-dot': 1. 2. 3. 形式
    * 后续可添加更多形式
    */
