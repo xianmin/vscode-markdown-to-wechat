@@ -1,7 +1,8 @@
 import { Drawer, Select, Space, Typography, Row, Col, Button, message, Divider, Input } from 'antd'
-import { SaveOutlined } from '@ant-design/icons'
+import { SaveOutlined, UndoOutlined } from '@ant-design/icons'
 import { useAppContext } from '../context'
 import { useState } from 'react'
+import { defaultSettings } from '../hooks'
 
 const { Option } = Select
 const { Title, Text } = Typography
@@ -51,6 +52,12 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
     } else {
       message.error('请输入有效的十六进制颜色代码，例如 #ff0000')
     }
+  }
+
+  // 确认重置所有设置
+  const handleResetSettings = () => {
+    // 直接修改设置状态
+    updateSettings(defaultSettings)
   }
 
   // 自定义标题栏，包含保存按钮
@@ -186,6 +193,13 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
             </Select>
           </Col>
         </Row>
+
+        <Divider style={{ margin: '20px 0' }} />
+
+        {/* 重置按钮 */}
+        <Button icon={<UndoOutlined />} onClick={handleResetSettings} block danger>
+          重置所有设置
+        </Button>
       </Space>
     </Drawer>
   )
