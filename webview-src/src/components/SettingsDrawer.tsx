@@ -1,8 +1,20 @@
-import { Drawer, Select, Space, Typography, Row, Col, Button, message, Divider, Input } from 'antd'
+import {
+  Drawer,
+  Select,
+  Space,
+  Typography,
+  Row,
+  Col,
+  Button,
+  message,
+  Divider,
+  ColorPicker,
+  Flex,
+} from 'antd'
 import { SaveOutlined, UndoOutlined } from '@ant-design/icons'
 import { useAppContext } from '../context'
-import { useState } from 'react'
 import { defaultSettings } from '../hooks'
+import type { Color } from 'antd/es/color-picker'
 
 const { Option } = Select
 const { Title, Text } = Typography
@@ -12,20 +24,31 @@ interface SettingsDrawerProps {
   onClose: () => void
 }
 
-// 预定义颜色选项
-const colorOptions = [
-  { label: '默认', value: '' },
-  { label: '默认蓝', value: '#017fc0' },
-  { label: '深沉绿', value: '#0e7a3b' },
-  { label: '温暖橙', value: '#f26b24' },
-  { label: '睿智紫', value: '#673ab7' },
-  { label: '经典红', value: '#e53935' },
-  { label: '稳重灰', value: '#607d8b' },
+// 预定义推荐颜色
+const presetColors = [
+  '#D92662', // Pink
+  '#D9269D', // Fuchsia
+  '#9236A4', // Purple
+  '#7540BF', // Violet
+  '#524ED2', // Indigo
+  '#3C71F7', // Blue
+  '#017FC0', // Azure
+  '#058686', // Cyan
+  '#00895A', // Jade
+  '#398712', // Green
+  '#A5D601', // Lime
+  '#F2DF0D', // Yellow
+  '#FFBF00', // Amber
+  '#FF9500', // Pumpkin
+  '#D24317', // Orange
+  '#CCC6B4', // Sand
+  '#808080', // Grey
+  '#6F7887', // Zinc
+  '#525F7A', // Slate
 ]
 
 export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
   const { settings, updateSettings, saveSettings } = useAppContext()
-  const [customColor, setCustomColor] = useState('')
 
   // 保存设置到VSCode
   const handleSaveSettings = () => {
@@ -35,22 +58,13 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
   }
 
   // 颜色变更处理
-  const handleColorChange = (value: string) => {
-    updateSettings({ primaryColor: value })
-  }
-
-  // 自定义颜色变更
-  const handleCustomColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomColor(e.target.value)
-  }
-
-  // 应用自定义颜色
-  const applyCustomColor = () => {
-    if (/^#[0-9A-Fa-f]{6}$/.test(customColor)) {
-      updateSettings({ primaryColor: customColor })
-      message.success('已应用自定义颜色')
+  const handleColorChange = (value: Color) => {
+    if (value) {
+      const colorHex = typeof value === 'string' ? value : value.toHexString()
+      updateSettings({ primaryColor: colorHex })
     } else {
-      message.error('请输入有效的十六进制颜色代码，例如 #ff0000')
+      // 清除颜色（恢复默认）
+      updateSettings({ primaryColor: '' })
     }
   }
 
@@ -88,12 +102,42 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
     >
       <Space direction="vertical" style={{ width: '100%' }}>
         {/* 样式设置组 */}
-        <Title level={4} style={{ marginTop: 0, marginBottom: 0 }}>
-          样式
-          <Text type="secondary" style={{ marginBottom: 12, display: 'block', fontSize: '12px' }}>
+        <Flex align="center" justify="space-between">
+          <Title level={4} style={{ marginTop: 0, marginBottom: 12 }}>
+            样式
+          </Title>
+          <Text type="secondary" style={{ fontSize: '12px' }}>
             （注：设置样式会覆盖主题样式）
           </Text>
-        </Title>
+        </Flex>
+
+        <Row align="middle" justify="space-between">
+          <Col>
+            <Title level={5} style={{ margin: 0 }}>
+              主题色
+            </Title>
+          </Col>
+          <Col>
+            <ColorPicker
+              value={settings.primaryColor || undefined}
+              onChange={handleColorChange}
+              presets={[
+                {
+                  label: '推荐颜色',
+                  colors: presetColors,
+                },
+              ]}
+              showText={(color) => {
+                if (!color) return <span>默认</span>
+                const hex = typeof color === 'string' ? color : color.toHexString()
+                return <span>{hex || '默认'}</span>
+              }}
+              allowClear
+              onClear={() => updateSettings({ primaryColor: '' })}
+              size="middle"
+            />
+          </Col>
+        </Row>
 
         <Row align="middle" justify="space-between">
           <Col>
@@ -113,57 +157,6 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
               <Option value="16px">推荐 (16px)</Option>
               <Option value="17px">稍大 (17px)</Option>
               <Option value="18px">更大 (18px)</Option>
-            </Select>
-          </Col>
-        </Row>
-
-        {/* <Divider style={{ margin: '12px 0' }} /> */}
-
-        <Row align="middle" justify="space-between">
-          <Col>
-            <Title level={5} style={{ margin: 0 }}>
-              主题色
-            </Title>
-          </Col>
-          <Col>
-            <Select
-              style={{ width: '120px' }}
-              value={settings.primaryColor}
-              onChange={handleColorChange}
-              dropdownRender={(menu) => (
-                <>
-                  {menu}
-                  <Divider style={{ margin: '8px 0' }} />
-                  <Space style={{ padding: '0 8px 4px' }}>
-                    <Input
-                      placeholder="#自定义色值"
-                      value={customColor}
-                      onChange={handleCustomColorChange}
-                      style={{ width: 120 }}
-                    />
-                    <Button type="primary" size="small" onClick={applyCustomColor}>
-                      应用
-                    </Button>
-                  </Space>
-                </>
-              )}
-            >
-              {colorOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div
-                      style={{
-                        width: 16,
-                        height: 16,
-                        background: option.value || '#f0f0f0',
-                        marginRight: 8,
-                        borderRadius: 4,
-                      }}
-                    />
-                    {option.label}
-                  </div>
-                </Option>
-              ))}
             </Select>
           </Col>
         </Row>
