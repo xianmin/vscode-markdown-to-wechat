@@ -10,6 +10,7 @@ import {
   Divider,
   ColorPicker,
   Flex,
+  Switch,
 } from 'antd'
 import { SaveOutlined, UndoOutlined } from '@ant-design/icons'
 import { useAppContext } from '../context'
@@ -184,6 +185,20 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
               <Option value="number-dot">1. 2. 3.</Option>
               <Option value="chinese-dot">一、二、三、</Option>
             </Select>
+          </Col>
+        </Row>
+
+        <Row align="middle" justify="space-between">
+          <Col>
+            <Title level={5} style={{ margin: 0 }}>
+              强制换行
+            </Title>
+          </Col>
+          <Col>
+            <Switch
+              checked={settings.forceLineBreaks}
+              onChange={(checked) => updateSettings({ forceLineBreaks: checked })}
+            />
           </Col>
         </Row>
 

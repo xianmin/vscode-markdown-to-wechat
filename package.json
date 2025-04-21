@@ -102,6 +102,11 @@
           "type": "string",
           "default": "",
           "description": "主题主色调，用于设置链接和主要UI元素的颜色"
+        },
+        "markdown-to-wechat.forceLineBreaks": {
+          "type": "boolean",
+          "default": false,
+          "description": "强制换行 - 将单个换行符转换为<br>标签，否则单换行会被视为空格"
         }
       }
     }

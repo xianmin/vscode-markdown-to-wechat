@@ -5,6 +5,8 @@ import remarkGfm from 'remark-gfm'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
+import remarkBreaks from 'remark-breaks'
+import remarkCjkFriendly from 'remark-cjk-friendly'
 import { ThemeStyleJson } from './useThemeManager'
 import { AppSettings } from '../types/settings'
 import { rehypeApplyStyles, remarkNumberedHeadings } from '../plugins'
@@ -12,7 +14,12 @@ import { rehypeApplyStyles, remarkNumberedHeadings } from '../plugins'
 export function useMarkdownProcessor(
   markdown: string,
   themeStyles: ThemeStyleJson = {},
-  settings: AppSettings = { fontSize: '', headingNumberingStyle: '', primaryColor: '' }
+  settings: AppSettings = {
+    fontSize: '',
+    headingNumberingStyle: '',
+    primaryColor: '',
+    forceLineBreaks: false,
+  }
 ) {
   const [html, setHtml] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -41,10 +48,20 @@ export function useMarkdownProcessor(
         }
 
         // Markdown处理流程
-        const file = await unified()
+        // 创建基础处理器
+        const processor = unified()
           .use(remarkParse)
           .use(remarkFrontmatter) // 在AST中处理frontmatter，这样它不会被当作正文内容解析
           .use(remarkGfm)
+          .use(remarkCjkFriendly) // https://github.com/tats-u/markdown-cjk-friendly/tree/main/packages/remark-cjk-friendly
+
+        // 根据设置条件应用remarkBreaks插件
+        if (settings.forceLineBreaks) {
+          processor.use(remarkBreaks)
+        }
+
+        // 完成剩余处理流程
+        const file = await processor
           .use(remarkNumberedHeadings({ style: settings.headingNumberingStyle })) // 为二级标题添加序号前缀
           .use(remarkRehype, { allowDangerousHtml: true })
           .use(rehypeApplyStyles(themeStyles))

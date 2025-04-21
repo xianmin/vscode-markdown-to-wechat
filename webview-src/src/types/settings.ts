@@ -21,5 +21,11 @@ export interface AppSettings {
    */
   primaryColor: string
 
+  /**
+   * 强制换行
+   * 将单个换行符转换为<br>标签
+   */
+  forceLineBreaks: boolean
+
   // 未来可以扩展更多设置项
 }

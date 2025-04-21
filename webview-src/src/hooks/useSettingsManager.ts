@@ -6,6 +6,7 @@ export const defaultSettings: AppSettings = {
   fontSize: '',
   headingNumberingStyle: '',
   primaryColor: '',
+  forceLineBreaks: false,
 }
 
 /**

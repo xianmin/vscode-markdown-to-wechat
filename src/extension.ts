@@ -59,7 +59,8 @@ export function activate(context: vscode.ExtensionContext) {
       if (
         event.affectsConfiguration('markdown-to-wechat.fontSize') ||
         event.affectsConfiguration('markdown-to-wechat.headingNumberingStyle') ||
-        event.affectsConfiguration('markdown-to-wechat.primaryColor')
+        event.affectsConfiguration('markdown-to-wechat.primaryColor') ||
+        event.affectsConfiguration('markdown-to-wechat.forceLineBreaks')
       ) {
         // 获取新的设置并广播
         const updatedSettings = settingsService.getSettings()

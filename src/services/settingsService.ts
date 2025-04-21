@@ -5,6 +5,7 @@ export interface AppSettings {
   fontSize: string
   headingNumberingStyle: string
   primaryColor: string
+  forceLineBreaks: boolean
   // 后续可添加更多设置
 }
 
@@ -13,6 +14,7 @@ export const defaultSettings: AppSettings = {
   fontSize: '',
   headingNumberingStyle: 'number-dot', // 默认使用数字点形式
   primaryColor: '', // 默认为空
+  forceLineBreaks: false, // 默认不强制换行
 }
 
 // 配置键常量
@@ -20,6 +22,7 @@ const CONFIG_SECTION = 'markdown-to-wechat'
 const FONT_SIZE_KEY = 'fontSize'
 const HEADING_NUMBERING_STYLE_KEY = 'headingNumberingStyle'
 const PRIMARY_COLOR_KEY = 'primaryColor'
+const FORCE_LINE_BREAKS_KEY = 'forceLineBreaks'
 
 // 设置管理服务
 export class SettingsService {
@@ -40,6 +43,7 @@ export class SettingsService {
         defaultSettings.headingNumberingStyle
       ),
       primaryColor: config.get<string>(PRIMARY_COLOR_KEY, defaultSettings.primaryColor),
+      forceLineBreaks: config.get<boolean>(FORCE_LINE_BREAKS_KEY, defaultSettings.forceLineBreaks),
     }
   }
 
@@ -62,6 +66,11 @@ export class SettingsService {
       await config.update(PRIMARY_COLOR_KEY, newSettings.primaryColor, true)
     }
 
+    // 更新强制换行设置
+    if (newSettings.forceLineBreaks !== undefined) {
+      await config.update(FORCE_LINE_BREAKS_KEY, newSettings.forceLineBreaks, true)
+    }
+
     // 返回更新后的设置
     return this.getSettings()
   }
@@ -74,6 +83,7 @@ export class SettingsService {
     await config.update(FONT_SIZE_KEY, undefined, true) // undefined 表示恢复默认值
     await config.update(HEADING_NUMBERING_STYLE_KEY, undefined, true)
     await config.update(PRIMARY_COLOR_KEY, undefined, true)
+    await config.update(FORCE_LINE_BREAKS_KEY, undefined, true)
 
     return this.getSettings()
   }
