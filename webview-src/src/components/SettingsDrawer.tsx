@@ -4,7 +4,7 @@ import { useAppContext } from '../context'
 import { useState } from 'react'
 
 const { Option } = Select
-const { Title } = Typography
+const { Title, Text } = Typography
 
 interface SettingsDrawerProps {
   open: boolean
@@ -80,6 +80,14 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
       extra={false}
     >
       <Space direction="vertical" style={{ width: '100%' }}>
+        {/* 样式设置组 */}
+        <Title level={4} style={{ marginTop: 0, marginBottom: 0 }}>
+          样式
+          <Text type="secondary" style={{ marginBottom: 12, display: 'block', fontSize: '12px' }}>
+            （注：设置样式会覆盖主题样式）
+          </Text>
+        </Title>
+
         <Row align="middle" justify="space-between">
           <Col>
             <Title level={5} style={{ margin: 0 }}>
@@ -102,28 +110,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
           </Col>
         </Row>
 
-        <Divider style={{ margin: '12px 0' }} />
-
-        <Row align="middle" justify="space-between">
-          <Col>
-            <Title level={5} style={{ margin: 0 }}>
-              标题编号
-            </Title>
-          </Col>
-          <Col>
-            <Select
-              style={{ width: '120px' }}
-              value={settings.headingNumberingStyle}
-              onChange={(value) => updateSettings({ headingNumberingStyle: value })}
-            >
-              <Option value="">不使用</Option>
-              <Option value="number-dot">1. 2. 3.</Option>
-              <Option value="chinese-dot">一、二、三、</Option>
-            </Select>
-          </Col>
-        </Row>
-
-        <Divider style={{ margin: '12px 0' }} />
+        {/* <Divider style={{ margin: '12px 0' }} /> */}
 
         <Row align="middle" justify="space-between">
           <Col>
@@ -161,7 +148,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
                       style={{
                         width: 16,
                         height: 16,
-                        background: option.value,
+                        background: option.value || '#f0f0f0',
                         marginRight: 8,
                         borderRadius: 4,
                       }}
@@ -170,6 +157,32 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
                   </div>
                 </Option>
               ))}
+            </Select>
+          </Col>
+        </Row>
+
+        <Divider style={{ margin: '20px 0' }} />
+
+        {/* 功能设置组 */}
+        <Title level={4} style={{ marginTop: 0, marginBottom: 12 }}>
+          功能
+        </Title>
+
+        <Row align="middle" justify="space-between">
+          <Col>
+            <Title level={5} style={{ margin: 0 }}>
+              标题编号
+            </Title>
+          </Col>
+          <Col>
+            <Select
+              style={{ width: '120px' }}
+              value={settings.headingNumberingStyle}
+              onChange={(value) => updateSettings({ headingNumberingStyle: value })}
+            >
+              <Option value="">不使用</Option>
+              <Option value="number-dot">1. 2. 3.</Option>
+              <Option value="chinese-dot">一、二、三、</Option>
             </Select>
           </Col>
         </Row>

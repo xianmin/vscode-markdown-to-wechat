@@ -12,7 +12,7 @@ export function useSettingsManager(vscode: VSCodeAPI, initialSettings: AppSettin
   const [settings, setSettings] = useState<AppSettings>(
     initialSettings || {
       fontSize: '',
-      headingNumberingStyle: 'number-dot',
+      headingNumberingStyle: '',
       primaryColor: '',
     }
   )

@@ -52,6 +52,11 @@
     "configuration": {
       "title": "Markdown to WeChat",
       "properties": {
+        "markdown-to-wechat.themesStoragePath": {
+          "type": "string",
+          "description": "自定义主题文件的存储路径，留空时使用VS Code扩展全局存储位置",
+          "markdownDescription": "自定义主题文件的存储路径，可以在此路径添加或修改CSS主题文件。默认使用VS Code扩展全局存储位置，可通过命令\"markdown-to-wechat: 打开主题文件夹\"访问。"
+        },
         "markdown-to-wechat.theme": {
           "type": "string",
           "default": "经典",
@@ -97,11 +102,6 @@
           "type": "string",
           "default": "",
           "description": "主题主色调，用于设置链接和主要UI元素的颜色"
-        },
-        "markdown-to-wechat.themesStoragePath": {
-          "type": "string",
-          "description": "自定义主题文件的存储路径，留空时使用VS Code扩展全局存储位置",
-          "markdownDescription": "自定义主题文件的存储路径，可以在此路径添加或修改CSS主题文件。默认使用VS Code扩展全局存储位置，可通过命令\"markdown-to-wechat: 打开主题文件夹\"访问。"
         }
       }
     }
