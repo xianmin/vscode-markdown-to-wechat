@@ -19,6 +19,7 @@ export function useMarkdownProcessor(
     headingNumberingStyle: '',
     primaryColor: '',
     forceLineBreaks: false,
+    imageDomain: '',
   }
 ) {
   const [html, setHtml] = useState<string>('')
@@ -77,7 +78,7 @@ export function useMarkdownProcessor(
         const file = await processor
           .use(remarkNumberedHeadings({ style: settings.headingNumberingStyle })) // 为二级标题添加序号前缀
           .use(remarkRehype, { allowDangerousHtml: true })
-          .use(rehypeImageTransformer()) // 转换图片为figure结构
+          .use(rehypeImageTransformer({ imageDomain: settings.imageDomain })) // 转换图片为figure结构
           .use(rehypeApplyStyles(mergedThemeStyles))
           .use(rehypeStringify, { allowDangerousHtml: true })
           .process(markdown)

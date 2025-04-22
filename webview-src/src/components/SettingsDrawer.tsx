@@ -11,8 +11,10 @@ import {
   ColorPicker,
   Flex,
   Switch,
+  Input,
+  Tooltip,
 } from 'antd'
-import { SaveOutlined, UndoOutlined } from '@ant-design/icons'
+import { SaveOutlined, UndoOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useAppContext } from '../context'
 import { defaultSettings } from '../hooks'
 import type { Color } from 'antd/es/color-picker'
@@ -198,6 +200,25 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
             <Switch
               checked={settings.forceLineBreaks}
               onChange={(checked) => updateSettings({ forceLineBreaks: checked })}
+            />
+          </Col>
+        </Row>
+
+        <Row align="middle" justify="space-between">
+          <Col>
+            <Title level={5} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+              图片域名
+              <Tooltip title="用于设置图片的基础URL前缀">
+                <QuestionCircleOutlined style={{ marginLeft: 4, fontSize: 14, color: '#999' }} />
+              </Tooltip>
+            </Title>
+          </Col>
+          <Col>
+            <Input
+              style={{ width: '120px' }}
+              value={settings.imageDomain}
+              onChange={(e) => updateSettings({ imageDomain: e.target.value })}
+              placeholder="例如: https://example.com"
             />
           </Col>
         </Row>

@@ -7,6 +7,7 @@ export const defaultSettings: AppSettings = {
   headingNumberingStyle: '',
   primaryColor: '',
   forceLineBreaks: false,
+  imageDomain: '',
 }
 
 /**

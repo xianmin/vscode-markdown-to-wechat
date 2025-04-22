@@ -11,9 +11,10 @@ interface ExtendedElement extends Element {
 /**
  * 创建一个rehype插件，将图片转换为带有figure和figcaption的结构
  * 仅负责结构转换，样式将由rehypeApplyStyles插件统一处理
+ * @param options 配置选项
  * @returns rehype插件
  */
-export function rehypeImageTransformer(): Plugin<[], Root> {
+export function rehypeImageTransformer(options: { imageDomain?: string } = {}): Plugin<[], Root> {
   return () => (tree: Root) => {
     visit(tree, 'element', (node: ExtendedElement, index, parent) => {
       // 只处理img标签
@@ -22,9 +23,27 @@ export function rehypeImageTransformer(): Plugin<[], Root> {
       }
 
       // 获取img的属性
-      const src = node.properties?.src || ''
+      let src = node.properties?.src || ''
       const alt = node.properties?.alt || ''
       const title = node.properties?.title || ''
+
+      // 保存原始src到data-src属性
+      node.properties['data-src'] = src
+
+      // 如果设置了图片域名，并且src不是完整URL，则拼接域名
+      if (
+        options.imageDomain &&
+        typeof src === 'string' &&
+        !src.match(/^(https?:\/\/|data:|file:)/i)
+      ) {
+        // 处理域名和路径的拼接，确保没有多余的斜杠
+        const domain = options.imageDomain.endsWith('/')
+          ? options.imageDomain.slice(0, -1)
+          : options.imageDomain
+
+        src = src.startsWith('/') ? `${domain}${src}` : `${domain}/${src}`
+        node.properties.src = src
+      }
 
       // 创建figcaption元素(如果有alt或title)
       const children: Element[] = []
@@ -35,6 +54,7 @@ export function rehypeImageTransformer(): Plugin<[], Root> {
         tagName: 'img',
         properties: {
           ...node.properties,
+          'data-src': node.properties.src, // 确保新元素也有data-src属性
         },
         children: [],
       }

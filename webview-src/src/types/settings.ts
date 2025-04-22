@@ -27,5 +27,11 @@ export interface AppSettings {
    */
   forceLineBreaks: boolean
 
+  /**
+   * 图片域名
+   * 用于设置图片的基础URL前缀
+   */
+  imageDomain: string
+
   // 未来可以扩展更多设置项
 }

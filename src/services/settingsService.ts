@@ -8,6 +8,7 @@ export interface AppSettings {
   headingNumberingStyle: string
   primaryColor: string
   forceLineBreaks: boolean
+  imageDomain: string
   // 后续可添加更多设置
 }
 
@@ -17,6 +18,7 @@ const defaultSettings: AppSettings = {
   headingNumberingStyle: '',
   primaryColor: '',
   forceLineBreaks: false, // 默认不强制换行
+  imageDomain: '', // 默认图片域名为空
 }
 
 // 配置键常量
@@ -25,6 +27,7 @@ const FONT_SIZE_KEY = 'fontSize'
 const HEADING_NUMBERING_STYLE_KEY = 'headingNumberingStyle'
 const PRIMARY_COLOR_KEY = 'primaryColor'
 const FORCE_LINE_BREAKS_KEY = 'forceLineBreaks'
+const IMAGE_DOMAIN_KEY = 'imageDomain'
 
 /**
  * 设置服务实现
@@ -61,7 +64,8 @@ export class SettingsService implements ISettingsService {
           e.affectsConfiguration(`${CONFIG_SECTION}.${FONT_SIZE_KEY}`) ||
           e.affectsConfiguration(`${CONFIG_SECTION}.${HEADING_NUMBERING_STYLE_KEY}`) ||
           e.affectsConfiguration(`${CONFIG_SECTION}.${PRIMARY_COLOR_KEY}`) ||
-          e.affectsConfiguration(`${CONFIG_SECTION}.${FORCE_LINE_BREAKS_KEY}`)
+          e.affectsConfiguration(`${CONFIG_SECTION}.${FORCE_LINE_BREAKS_KEY}`) ||
+          e.affectsConfiguration(`${CONFIG_SECTION}.${IMAGE_DOMAIN_KEY}`)
         ) {
           const settings = this.getSettings()
           this.notifySettingsChanged(settings)
@@ -85,6 +89,7 @@ export class SettingsService implements ISettingsService {
       ),
       primaryColor: config.get<string>(PRIMARY_COLOR_KEY, defaultSettings.primaryColor),
       forceLineBreaks: config.get<boolean>(FORCE_LINE_BREAKS_KEY, defaultSettings.forceLineBreaks),
+      imageDomain: config.get<string>(IMAGE_DOMAIN_KEY, defaultSettings.imageDomain),
     }
   }
 
@@ -116,6 +121,11 @@ export class SettingsService implements ISettingsService {
       await config.update(FORCE_LINE_BREAKS_KEY, newSettings.forceLineBreaks, true)
     }
 
+    // 更新图片域名设置
+    if (newSettings.imageDomain !== undefined) {
+      await config.update(IMAGE_DOMAIN_KEY, newSettings.imageDomain, true)
+    }
+
     // 获取更新后的设置
     const updatedSettings = this.getSettings()
 
@@ -137,6 +147,7 @@ export class SettingsService implements ISettingsService {
     await config.update(HEADING_NUMBERING_STYLE_KEY, undefined, true)
     await config.update(PRIMARY_COLOR_KEY, undefined, true)
     await config.update(FORCE_LINE_BREAKS_KEY, undefined, true)
+    await config.update(IMAGE_DOMAIN_KEY, undefined, true)
 
     // 获取重置后的设置
     const resetSettings = this.getSettings()
