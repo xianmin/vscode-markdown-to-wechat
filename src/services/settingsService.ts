@@ -9,6 +9,7 @@ export interface AppSettings {
   primaryColor: string
   forceLineBreaks: boolean
   imageDomain: string
+  enableReferenceLinks: boolean
   // 后续可添加更多设置
 }
 
@@ -19,6 +20,7 @@ const defaultSettings: AppSettings = {
   primaryColor: '',
   forceLineBreaks: false, // 默认不强制换行
   imageDomain: '', // 默认图片域名为空
+  enableReferenceLinks: false, // 默认不启用引用链接
 }
 
 // 配置键常量
@@ -28,6 +30,7 @@ const HEADING_NUMBERING_STYLE_KEY = 'headingNumberingStyle'
 const PRIMARY_COLOR_KEY = 'primaryColor'
 const FORCE_LINE_BREAKS_KEY = 'forceLineBreaks'
 const IMAGE_DOMAIN_KEY = 'imageDomain'
+const ENABLE_REFERENCE_LINKS_KEY = 'enableReferenceLinks'
 
 /**
  * 设置服务实现
@@ -65,7 +68,8 @@ export class SettingsService implements ISettingsService {
           e.affectsConfiguration(`${CONFIG_SECTION}.${HEADING_NUMBERING_STYLE_KEY}`) ||
           e.affectsConfiguration(`${CONFIG_SECTION}.${PRIMARY_COLOR_KEY}`) ||
           e.affectsConfiguration(`${CONFIG_SECTION}.${FORCE_LINE_BREAKS_KEY}`) ||
-          e.affectsConfiguration(`${CONFIG_SECTION}.${IMAGE_DOMAIN_KEY}`)
+          e.affectsConfiguration(`${CONFIG_SECTION}.${IMAGE_DOMAIN_KEY}`) ||
+          e.affectsConfiguration(`${CONFIG_SECTION}.${ENABLE_REFERENCE_LINKS_KEY}`)
         ) {
           const settings = this.getSettings()
           this.notifySettingsChanged(settings)
@@ -90,6 +94,7 @@ export class SettingsService implements ISettingsService {
       primaryColor: config.get<string>(PRIMARY_COLOR_KEY, defaultSettings.primaryColor),
       forceLineBreaks: config.get<boolean>(FORCE_LINE_BREAKS_KEY, defaultSettings.forceLineBreaks),
       imageDomain: config.get<string>(IMAGE_DOMAIN_KEY, defaultSettings.imageDomain),
+      enableReferenceLinks: config.get<boolean>(ENABLE_REFERENCE_LINKS_KEY, defaultSettings.enableReferenceLinks),
     }
   }
 
@@ -126,6 +131,11 @@ export class SettingsService implements ISettingsService {
       await config.update(IMAGE_DOMAIN_KEY, newSettings.imageDomain, true)
     }
 
+    // 更新引用链接设置
+    if (newSettings.enableReferenceLinks !== undefined) {
+      await config.update(ENABLE_REFERENCE_LINKS_KEY, newSettings.enableReferenceLinks, true)
+    }
+
     // 获取更新后的设置
     const updatedSettings = this.getSettings()
 
@@ -148,6 +158,7 @@ export class SettingsService implements ISettingsService {
     await config.update(PRIMARY_COLOR_KEY, undefined, true)
     await config.update(FORCE_LINE_BREAKS_KEY, undefined, true)
     await config.update(IMAGE_DOMAIN_KEY, undefined, true)
+    await config.update(ENABLE_REFERENCE_LINKS_KEY, undefined, true)
 
     // 获取重置后的设置
     const resetSettings = this.getSettings()

@@ -112,6 +112,11 @@
           "type": "string",
           "default": "",
           "description": "图片域名 - 用于设置图片的基础URL前缀"
+        },
+        "markdown-to-wechat.enableReferenceLinks": {
+          "type": "boolean",
+          "default": false,
+          "description": "引用链接 - 将链接转换为引用形式，在文档末尾添加参考链接列表"
         }
       }
     }

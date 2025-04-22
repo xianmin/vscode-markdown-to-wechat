@@ -223,6 +223,23 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
           </Col>
         </Row>
 
+        <Row align="middle" justify="space-between">
+          <Col>
+            <Title level={5} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+              引用链接
+              <Tooltip title="将链接转换为引用形式，在文档末尾添加参考链接列表">
+                <QuestionCircleOutlined style={{ marginLeft: 4, fontSize: 14, color: '#999' }} />
+              </Tooltip>
+            </Title>
+          </Col>
+          <Col>
+            <Switch
+              checked={settings.enableReferenceLinks}
+              onChange={(checked) => updateSettings({ enableReferenceLinks: checked })}
+            />
+          </Col>
+        </Row>
+
         <Divider style={{ margin: '20px 0' }} />
 
         {/* 重置按钮 */}

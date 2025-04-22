@@ -9,7 +9,12 @@ import remarkBreaks from 'remark-breaks'
 import remarkCjkFriendly from 'remark-cjk-friendly'
 import { ThemeStyleJson } from './useThemeManager'
 import { AppSettings } from '../types/settings'
-import { rehypeApplyStyles, remarkNumberedHeadings, rehypeImageTransformer } from '../plugins'
+import {
+  rehypeApplyStyles,
+  remarkNumberedHeadings,
+  rehypeImageTransformer,
+  remarkReferenceLinks,
+} from '../plugins'
 
 export function useMarkdownProcessor(
   markdown: string,
@@ -20,6 +25,7 @@ export function useMarkdownProcessor(
     primaryColor: '',
     forceLineBreaks: false,
     imageDomain: '',
+    enableReferenceLinks: false,
   }
 ) {
   const [html, setHtml] = useState<string>('')
@@ -68,6 +74,11 @@ export function useMarkdownProcessor(
           .use(remarkFrontmatter) // 在AST中处理frontmatter，这样它不会被当作正文内容解析
           .use(remarkGfm)
           .use(remarkCjkFriendly) // https://github.com/tats-u/markdown-cjk-friendly/tree/main/packages/remark-cjk-friendly
+
+        // 根据设置条件应用remarkReferenceLinks插件
+        if (settings.enableReferenceLinks) {
+          processor.use(remarkReferenceLinks) // 将链接和图片转换为引用格式，并在文档末尾添加统一定义
+        }
 
         // 根据设置条件应用remarkBreaks插件
         if (settings.forceLineBreaks) {

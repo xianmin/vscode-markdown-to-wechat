@@ -8,6 +8,7 @@ export const defaultSettings: AppSettings = {
   primaryColor: '',
   forceLineBreaks: false,
   imageDomain: '',
+  enableReferenceLinks: false,
 }
 
 /**
