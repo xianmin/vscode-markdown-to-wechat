@@ -68,6 +68,21 @@ p {
   margin: 1em 0;
 }
 
+figure {
+  margin: 1.5em 0;
+  width: 100%;
+}
+
+img {
+  width: 100%;
+}
+
+figcaption {
+  padding: 0.5em;
+  color: #777;
+  text-align: right;
+}
+
 blockquote {
   font-style: normal;
   padding: 0.1px 1em;
@@ -94,10 +109,6 @@ li {
 .footnotes {
   margin: 0.5em 8px;
   font-size: 80%;
-}
-
-figure {
-  margin: 1.5em 8px;
 }
 
 hr {

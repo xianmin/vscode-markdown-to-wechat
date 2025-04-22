@@ -14,8 +14,8 @@ export interface AppSettings {
 // 默认设置
 const defaultSettings: AppSettings = {
   fontSize: '',
-  headingNumberingStyle: 'number-dot', // 默认使用数字点形式
-  primaryColor: '', // 默认为空
+  headingNumberingStyle: '',
+  primaryColor: '',
   forceLineBreaks: false, // 默认不强制换行
 }
 

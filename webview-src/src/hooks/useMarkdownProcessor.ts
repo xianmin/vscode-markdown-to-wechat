@@ -9,7 +9,7 @@ import remarkBreaks from 'remark-breaks'
 import remarkCjkFriendly from 'remark-cjk-friendly'
 import { ThemeStyleJson } from './useThemeManager'
 import { AppSettings } from '../types/settings'
-import { rehypeApplyStyles, remarkNumberedHeadings } from '../plugins'
+import { rehypeApplyStyles, remarkNumberedHeadings, rehypeImageTransformer } from '../plugins'
 
 export function useMarkdownProcessor(
   markdown: string,
@@ -77,6 +77,7 @@ export function useMarkdownProcessor(
         const file = await processor
           .use(remarkNumberedHeadings({ style: settings.headingNumberingStyle })) // 为二级标题添加序号前缀
           .use(remarkRehype, { allowDangerousHtml: true })
+          .use(rehypeImageTransformer()) // 转换图片为figure结构
           .use(rehypeApplyStyles(mergedThemeStyles))
           .use(rehypeStringify, { allowDangerousHtml: true })
           .process(markdown)
