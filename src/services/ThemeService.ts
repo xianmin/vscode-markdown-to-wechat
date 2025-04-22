@@ -450,7 +450,7 @@ export class ThemeService implements IThemeService {
    */
   private getDefaultTheme(): Theme | undefined {
     // 尝试获取默认主题或返回第一个主题
-    const defaultTheme = this.themes.find((t) => t.id === 'default')
+    const defaultTheme = this.themes.find((t) => t.id === '经典')
     return defaultTheme || this.themes[0]
   }
 }

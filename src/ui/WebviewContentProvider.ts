@@ -1,5 +1,19 @@
 import * as vscode from 'vscode'
-import { getUri } from '../utils/uriHelper'
+
+/**
+ * 获取WebView可用的资源URI
+ * @param webview WebView实例
+ * @param extensionUri 扩展URI
+ * @param pathList 资源路径列表
+ * @returns WebView可用的URI
+ */
+function getUri(
+  webview: vscode.Webview,
+  extensionUri: vscode.Uri,
+  pathList: string[]
+): vscode.Uri {
+  return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList))
+}
 
 /**
  * WebView 内容提供者
@@ -17,7 +31,6 @@ export class WebviewContentProvider {
   public static getWebviewContent(
     webview: vscode.Webview,
     extensionUri: vscode.Uri,
-    customCSS?: string,
     isDevelopmentMode?: boolean
   ): string {
     // 创建指向本地资源的URI

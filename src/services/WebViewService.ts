@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { IWebViewService } from '../core/interfaces/IWebViewService'
 import { IEventBus } from '../core/interfaces/IEventBus'
-import { WebviewContentProvider } from '../webview/contentProvider'
+import { WebviewContentProvider } from '../ui/WebviewContentProvider'
 
 /**
  * WebView服务实现
@@ -77,10 +77,9 @@ export class WebViewService implements IWebViewService {
 
   /**
    * 获取WebView内容
-   * @param customCSS 自定义CSS
    * @returns WebView HTML内容
    */
-  getWebViewContent(customCSS?: string): string {
+  getWebViewContent(): string {
     if (!this.webviewPanel) {
       throw new Error('WebView未创建')
     }
@@ -88,7 +87,6 @@ export class WebViewService implements IWebViewService {
     return WebviewContentProvider.getWebviewContent(
       this.webviewPanel.webview,
       this.extensionUri,
-      customCSS,
       this.isDevelopmentMode
     )
   }
