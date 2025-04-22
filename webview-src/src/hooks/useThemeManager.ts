@@ -16,42 +16,34 @@ export interface ThemeStyleJson {
 export interface ThemeManager {
   themes: Theme[]
   currentTheme: string
-  themeStyles: ThemeStyleJson
   changeTheme: (themeId: string) => void
-  getCSSVariableValue: (variableName: string) => string
 }
 
 /**
  * 主题管理Hook，负责：
  * 1. 接收和管理来自VSCode的主题数据
  * 2. 提供主题切换功能
- * 3. 提供原始主题样式数据
  */
-export function useThemeManager(vscode: VSCodeAPI): ThemeManager {
-  const [themes, setThemes] = useState<Theme[]>([])
-  const [currentTheme, setCurrentTheme] = useState<string>('')
-  const [themeStyles, setThemeStyles] = useState<ThemeStyleJson>({})
+export function useThemeManager(
+  vscode: VSCodeAPI,
+  initialThemes: Theme[],
+  initialCurrentTheme: string
+): ThemeManager {
+  const [themes, setThemes] = useState<Theme[]>(initialThemes || [])
+  const [currentTheme, setCurrentTheme] = useState<string>(initialCurrentTheme || '经典')
 
-  // 监听主题消息
+  // 当接收到新的主题数据时更新本地状态
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      const message = event.data
-      if (message.type === 'setThemes') {
-        setThemes(message.themes)
-        setCurrentTheme(message.currentTheme)
-
-        // 处理主题样式JSON
-        if (message.themeStylesJson) {
-          setThemeStyles(message.themeStylesJson)
-        }
-      }
+    if (initialThemes.length > 0) {
+      setThemes(initialThemes)
     }
+  }, [initialThemes])
 
-    window.addEventListener('message', handleMessage)
-    return () => {
-      window.removeEventListener('message', handleMessage)
+  useEffect(() => {
+    if (initialCurrentTheme) {
+      setCurrentTheme(initialCurrentTheme)
     }
-  }, [])
+  }, [initialCurrentTheme])
 
   // 切换主题
   const changeTheme = (themeId: string) => {
@@ -62,20 +54,9 @@ export function useThemeManager(vscode: VSCodeAPI): ThemeManager {
     setCurrentTheme(themeId)
   }
 
-  // 获取CSS变量的实际值
-  const getCSSVariableValue = (variableName: string): string => {
-    // 从:root选择器中查找变量定义
-    if (themeStyles[':root']) {
-      return themeStyles[':root'][variableName] || ''
-    }
-    return ''
-  }
-
   return {
     themes,
     currentTheme,
-    themeStyles,
     changeTheme,
-    getCSSVariableValue,
   }
 }

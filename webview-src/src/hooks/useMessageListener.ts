@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react'
 import { VSCodeAPI } from './useVSCodeMessaging'
 import { Theme, ThemeStyleJson } from './useThemeManager'
 import { AppSettings } from '../types/settings'
+import { defaultSettings } from './useSettingsManager'
 
 export function useMessageListener(vscode: VSCodeAPI) {
   const [markdown, setMarkdown] = useState<string>('')
   const [themes, setThemes] = useState<Theme[]>([])
   const [currentTheme, setCurrentTheme] = useState<string>('')
   const [themeStylesJson, setThemeStylesJson] = useState<ThemeStyleJson>({})
-  const [settings, setSettings] = useState<AppSettings>({ fontSize: '16px' })
+  const [settings, setSettings] = useState<AppSettings>(defaultSettings)
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {

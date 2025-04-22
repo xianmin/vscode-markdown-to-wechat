@@ -1,5 +1,5 @@
 import { Toolbar, Preview } from './components'
-import { AppProvider, useAppContext } from './context'
+import { AppProvider } from './context'
 import { VSCodeAPI } from './hooks'
 import { App as AntdApp } from 'antd'
 import './App.css'
@@ -12,48 +12,16 @@ interface AppProps {
 function App({ vscode }: AppProps) {
   return (
     <AppProvider vscode={vscode}>
-      <AppContent />
-    </AppProvider>
-  )
-}
+      <AntdApp>
+        <div className="app-container">
+          <Toolbar />
 
-// 内部内容组件，使用上下文
-function AppContent() {
-  const {
-    html,
-    isLoading,
-    error,
-    themes,
-    currentTheme,
-    isCopying,
-    changeTheme,
-    copyToClipboard,
-    containerRef,
-  } = useAppContext()
-
-  return (
-    <AntdApp>
-      <div className="app-container">
-        <Toolbar
-          themes={themes}
-          currentTheme={currentTheme}
-          onThemeChange={changeTheme}
-          isLoading={isLoading}
-          hasContent={!!html}
-          isCopying={isCopying}
-          onCopy={copyToClipboard}
-        />
-
-        <div className="app-content">
-          <Preview
-            html={html}
-            isLoading={isLoading}
-            error={error}
-            containerRef={containerRef}
-          />
+          <div className="app-content">
+            <Preview />
+          </div>
         </div>
-      </div>
-    </AntdApp>
+      </AntdApp>
+    </AppProvider>
   )
 }
 

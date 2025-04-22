@@ -330,6 +330,7 @@ export class ThemeManager {
    * 重新加载主题
    */
   public reloadThemes(): void {
+    this.ensureUserThemesFolder()
     this.loadThemes()
   }
 }

@@ -4,11 +4,10 @@ import {
   useMessageListener,
   useMarkdownProcessor,
   useThemeManager,
-  useCopyToClipboard,
   useSettingsManager,
 } from '../hooks'
 import { VSCodeAPI } from '../hooks/useVSCodeMessaging'
-import { Theme, ThemeStyleJson } from '../hooks/useThemeManager'
+import { Theme } from '../hooks/useThemeManager'
 import { AppSettings } from '../types/settings'
 
 // 定义上下文类型
@@ -20,14 +19,10 @@ interface AppContextType {
   frontmatter: string | null
   themes: Theme[]
   currentTheme: string
-  themeStyles: ThemeStyleJson
-  isCopying: boolean
   settings: AppSettings
   updateSettings: (newSettings: Partial<AppSettings>) => void
   saveSettings: () => void
   changeTheme: (themeId: string) => void
-  copyToClipboard: () => void
-  containerRef: React.RefObject<HTMLDivElement>
 }
 
 // 创建上下文
@@ -46,64 +41,28 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
   // 从消息中获取数据
   const {
     markdown,
-    themes: messageThemes,
-    currentTheme: messageCurrentTheme,
+    themes: themesFromMessage,
+    currentTheme: currentThemeFromMessage,
     themeStylesJson,
-    settings: messageSettings,
+    settings: settingsFromMessage,
   } = useMessageListener(vscode)
 
   // 设置管理
-  const { settings, updateSettings, saveSettings } = useSettingsManager(vscode, messageSettings)
+  const { settings, updateSettings, saveSettings } = useSettingsManager(vscode, settingsFromMessage)
 
-  // 合并设置到主题样式
-  const mergedThemeStyles = {
-    ...themeStylesJson,
-    body: {
-      ...(themeStylesJson.body || {}),
-      ...(settings.fontSize ? { fontSize: settings.fontSize } : {}),
-    },
-    ':root': {
-      ...(themeStylesJson[':root'] || {}),
-      ...(settings.primaryColor ? { '--primary-color': settings.primaryColor } : {}),
-    },
-  }
-
-  // 处理Markdown
+  // 处理 Markdown
   const { html, isLoading, error, frontmatter } = useMarkdownProcessor(
     markdown,
-    mergedThemeStyles,
+    themeStylesJson,
     settings
   )
 
   // 管理主题
-  const themeManager = useThemeManager(vscode)
-  const { themes, currentTheme, changeTheme, themeStyles } = themeManager
-
-  // 复制功能
-  const { isCopying, copyToClipboard: _copyToClipboard, containerRef } = useCopyToClipboard()
-
-  // 包装复制函数，传递markdown原文本
-  const copyToClipboard = () => {
-    _copyToClipboard(markdown)
-  }
-
-  // 合并值
-  const mergedThemes = messageThemes.length > 0 ? messageThemes : themes
-  const mergedCurrentTheme = messageCurrentTheme || currentTheme
-  const finalThemeStyles =
-    Object.keys(themeStylesJson).length > 0
-      ? mergedThemeStyles
-      : {
-          ...themeStyles,
-          body: {
-            ...(themeStyles.body || {}),
-            ...(settings.fontSize ? { fontSize: settings.fontSize } : {}),
-          },
-          ':root': {
-            ...(themeStyles[':root'] || {}),
-            ...(settings.primaryColor ? { '--primary-color': settings.primaryColor } : {}),
-          },
-        }
+  const { themes, currentTheme, changeTheme } = useThemeManager(
+    vscode,
+    themesFromMessage,
+    currentThemeFromMessage
+  )
 
   const value = {
     markdown,
@@ -111,16 +70,12 @@ export function AppProvider({ children, vscode }: AppProviderProps) {
     isLoading,
     error,
     frontmatter,
-    themes: mergedThemes,
-    currentTheme: mergedCurrentTheme,
-    themeStyles: finalThemeStyles,
-    isCopying,
+    themes,
+    currentTheme,
+    changeTheme,
     settings,
     updateSettings,
     saveSettings,
-    changeTheme,
-    copyToClipboard,
-    containerRef,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

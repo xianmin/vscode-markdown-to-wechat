@@ -21,7 +21,6 @@ export function useSettingsManager(vscode: VSCodeAPI, initialSettings: AppSettin
   // 当接收到新的设置时更新本地状态
   useEffect(() => {
     if (initialSettings) {
-      console.log('设置管理器接收到新设置:', initialSettings)
       setSettings(initialSettings)
     }
   }, [initialSettings])

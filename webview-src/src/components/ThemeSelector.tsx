@@ -1,13 +1,9 @@
 import { Select } from 'antd'
-import { Theme } from '../hooks/useThemeManager'
+import { useAppContext } from '../context/AppContext'
 
-interface ThemeSelectorProps {
-  themes: Theme[]
-  currentTheme: string
-  onThemeChange: (themeId: string) => void
-}
+export function ThemeSelector() {
+  const { themes, currentTheme, changeTheme } = useAppContext()
 
-export function ThemeSelector({ themes, currentTheme, onThemeChange }: ThemeSelectorProps) {
   return (
     <div className="theme-selector">
       <div
@@ -34,7 +30,7 @@ export function ThemeSelector({ themes, currentTheme, onThemeChange }: ThemeSele
         </div>
         <Select
           value={currentTheme}
-          onChange={onThemeChange}
+          onChange={changeTheme}
           style={{ width: 100, border: 'none' }}
           options={themes.map((theme) => ({
             value: theme.id,

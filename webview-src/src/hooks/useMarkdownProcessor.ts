@@ -13,7 +13,7 @@ import { rehypeApplyStyles, remarkNumberedHeadings } from '../plugins'
 
 export function useMarkdownProcessor(
   markdown: string,
-  themeStyles: ThemeStyleJson = {},
+  themeStylesJson: ThemeStyleJson = {},
   settings: AppSettings = {
     fontSize: '',
     headingNumberingStyle: '',
@@ -28,6 +28,19 @@ export function useMarkdownProcessor(
 
   // 当Markdown内容、主题样式或设置变化时，转换为HTML
   useEffect(() => {
+    // 合并设置中的样式到主题样式
+    const mergedThemeStyles = {
+      ...themeStylesJson,
+      body: {
+        ...(themeStylesJson.body || {}),
+        ...(settings.fontSize ? { fontSize: settings.fontSize } : {}),
+      },
+      ':root': {
+        ...(themeStylesJson[':root'] || {}),
+        ...(settings.primaryColor ? { '--primary-color': settings.primaryColor } : {}),
+      },
+    }
+
     const convertMarkdown = async () => {
       if (!markdown) {
         return
@@ -64,12 +77,12 @@ export function useMarkdownProcessor(
         const file = await processor
           .use(remarkNumberedHeadings({ style: settings.headingNumberingStyle })) // 为二级标题添加序号前缀
           .use(remarkRehype, { allowDangerousHtml: true })
-          .use(rehypeApplyStyles(themeStyles))
+          .use(rehypeApplyStyles(mergedThemeStyles))
           .use(rehypeStringify, { allowDangerousHtml: true })
           .process(markdown)
 
         // 获取body的样式
-        const bodyStyles = getBodyStyles(themeStyles)
+        const bodyStyles = getBodyStyles(mergedThemeStyles)
         const styleAttribute = bodyStyles ? ` style="${bodyStyles}"` : ''
 
         // 将HTML包裹在section标签内，并应用body样式
@@ -85,7 +98,7 @@ export function useMarkdownProcessor(
     }
 
     convertMarkdown()
-  }, [markdown, themeStyles, settings]) // 添加settings作为依赖
+  }, [markdown, themeStylesJson, settings]) // 添加settings作为依赖
 
   // 提取frontmatter内容，仅用于导出以备后用
   // 这个函数只负责提取内容，不影响Markdown的解析过程
