@@ -1,0 +1,188 @@
+/**
+ * @theme-name: 简洁
+ * @theme-author: Markdown-to-WeChat
+ * @theme-description: 清爽简约的阅读主题，适合长文阅读
+ * @theme-version: 1.0.0
+ */
+
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #f1f1f1;
+  --text-color: #333333;
+  --light-text-color: #666666;
+  --background-color: #ffffff;
+  --border-color: #e0e0e0;
+  --code-background: #f8f8f8;
+  --blockquote-color: #f5f5f5;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  padding: 0 1em;
+  max-width: 42em;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 1.8em;
+  font-weight: 600;
+  margin: 2em 0 1em;
+  color: var(--primary-color);
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5em;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 1.8em 0 1em;
+  color: var(--primary-color);
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 0.3em;
+}
+
+h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin: 1.5em 0 0.8em;
+  color: var(--primary-color);
+}
+
+h4 {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 1.2em 0 0.6em;
+  color: var(--primary-color);
+}
+
+h5 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 1em 0 0.5em;
+  color: var(--primary-color);
+}
+
+h6 {
+  font-size: 0.9em;
+  font-weight: 600;
+  margin: 1em 0 0.5em;
+  color: var(--primary-color);
+}
+
+p {
+  margin: 1em 0;
+  line-height: 1.8;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--primary-color);
+}
+
+strong {
+  font-weight: 600;
+  color: #222;
+}
+
+em {
+  font-style: italic;
+}
+
+blockquote {
+  border-left: 4px solid var(--primary-color);
+  padding: 0.5em 1em;
+  margin: 1.5em 0;
+  background-color: var(--blockquote-color);
+  font-style: normal;
+  color: var(--light-text-color);
+}
+
+ul {
+  padding-left: 2em;
+  margin: 1em 0;
+  list-style-type: disc;
+}
+
+ol {
+  padding-left: 2em;
+  margin: 1em 0;
+}
+
+li {
+  margin: 0.5em 0;
+}
+
+code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9em;
+  background-color: var(--code-background);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  color: #d63384;
+}
+
+pre {
+  background-color: var(--code-background);
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5em auto;
+  border-radius: 5px;
+}
+
+figure {
+  margin: 1.5em 0;
+}
+
+figcaption {
+  text-align: center;
+  color: var(--light-text-color);
+  font-size: 0.9em;
+  margin-top: 0.5em;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 2em 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5em 0;
+}
+
+th {
+  border: 1px solid var(--border-color);
+  padding: 0.75em;
+  background-color: var(--secondary-color);
+  text-align: left;
+}
+
+td {
+  border: 1px solid var(--border-color);
+  padding: 0.75em;
+}
+
+.footnotes {
+  margin-top: 2em;
+  font-size: 0.9em;
+  color: var(--light-text-color);
+  border-top: 1px solid var(--border-color);
+  padding-top: 1em;
+}

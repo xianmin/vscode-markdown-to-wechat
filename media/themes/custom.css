@@ -1,12 +1,16 @@
 /**
- * @theme-name: 经典
- * @theme-author: xianmin
- * @theme-description: 暂无描述
+ * @theme-name: 自定义主题
+ * @theme-author: 用户
+ * @theme-description: 您可以自由修改这个主题文件
  * @theme-version: 1.0.0
  */
 
+/* 您可以自定义CSS样式 */
+/* 重要提示： 当前主题解析功能不支持复合选择器，请为每个元素分别定义样式 */
+
 :root {
-  --primary-color: #017fc0;
+  --primary-color: #017fc0; /* 主题色 */
+  /* --custom-var，你也可以添加更多自定义变量 */
 }
 
 body {

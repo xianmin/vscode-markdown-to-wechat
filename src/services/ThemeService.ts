@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as os from 'os'
-import { IThemeService } from '../core/interfaces/IThemeService'
+import { IThemeService, ThemeMetadata } from '../core/interfaces/IThemeService'
 import { IEventBus } from '../core/interfaces/IEventBus'
 
 /**
@@ -12,6 +12,9 @@ export interface Theme {
   id: string
   name: string
   path: string
+  author?: string
+  description?: string
+  version?: string
 }
 
 /**
@@ -159,7 +162,27 @@ export class ThemeService implements IThemeService {
   }
 
   /**
-   * 确保用户主题文件夹存在，并包含默认主题
+   * 复制custom.css到用户主题文件夹
+   */
+  private copyCustomThemeToUserFolder(): void {
+    try {
+      const sourcePath = path.join(this.defaultThemesPath, 'custom.css')
+      const targetPath = path.join(this.userThemesPath, 'custom.css')
+
+      // 只有当源文件存在且目标文件不存在时才复制
+      if (fs.existsSync(sourcePath) && !fs.existsSync(targetPath)) {
+        fs.copyFileSync(sourcePath, targetPath)
+      }
+    } catch (error) {
+      const err = error as Error
+      const errorMsg = `复制custom.css文件失败: ${err.message}`
+      console.error(errorMsg)
+      vscode.window.showErrorMessage(errorMsg)
+    }
+  }
+
+  /**
+   * 确保用户主题文件夹存在
    */
   private ensureUserThemesFolder(): void {
     try {
@@ -167,8 +190,8 @@ export class ThemeService implements IThemeService {
       if (!fs.existsSync(this.userThemesPath)) {
         fs.mkdirSync(this.userThemesPath, { recursive: true })
 
-        // 复制默认主题文件到用户主题文件夹
-        this.copyDefaultThemesToUserFolder()
+        // 复制custom.css到用户主题文件夹
+        this.copyCustomThemeToUserFolder()
 
         // 显示通知告知用户主题存储位置
         vscode.window
@@ -178,12 +201,6 @@ export class ThemeService implements IThemeService {
               vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(this.userThemesPath))
             }
           })
-      } else {
-        // 如果文件夹已存在，检查是否为空，如果为空，复制默认主题
-        const files = fs.readdirSync(this.userThemesPath)
-        if (files.length === 0) {
-          this.copyDefaultThemesToUserFolder()
-        }
       }
     } catch (error) {
       const err = error as Error
@@ -207,7 +224,7 @@ export class ThemeService implements IThemeService {
       // 创建备选文件夹
       if (!fs.existsSync(this.userThemesPath)) {
         fs.mkdirSync(this.userThemesPath, { recursive: true })
-        this.copyDefaultThemesToUserFolder()
+        this.copyCustomThemeToUserFolder()
       }
 
       // 更新配置
@@ -229,86 +246,127 @@ export class ThemeService implements IThemeService {
   }
 
   /**
-   * 复制默认主题到用户主题文件夹
-   */
-  private copyDefaultThemesToUserFolder(): void {
-    try {
-      if (!fs.existsSync(this.defaultThemesPath)) {
-        return
-      }
-
-      const files = fs.readdirSync(this.defaultThemesPath)
-      for (const file of files) {
-        if (file.endsWith('.css')) {
-          const sourcePath = path.join(this.defaultThemesPath, file)
-          const targetPath = path.join(this.userThemesPath, file)
-          fs.copyFileSync(sourcePath, targetPath)
-        }
-      }
-    } catch (error) {
-      const err = error as Error
-      const errorMsg = `复制默认主题文件失败: ${err.message}`
-      console.error(errorMsg)
-      vscode.window.showErrorMessage(errorMsg)
-    }
-  }
-
-  /**
    * 加载所有主题文件
    */
   private loadThemes(): void {
     this.themes = []
 
-    // 检查用户主题文件夹是否有CSS文件
-    const userThemesExist = this.checkThemesExist(this.userThemesPath)
+    // 先从内置路径加载主题（扩展目录中的主题）
+    if (fs.existsSync(this.defaultThemesPath)) {
+      this.loadThemesFromFolder(this.defaultThemesPath)
+    }
 
-    // 如果用户主题文件夹中没有CSS文件，则复制默认主题
+    // 检查用户主题文件夹是否存在
+    let userThemesExist = fs.existsSync(this.userThemesPath)
+
+    // 如果用户主题文件夹不存在，创建它
     if (!userThemesExist) {
-      this.copyDefaultThemesToUserFolder()
+      try {
+        fs.mkdirSync(this.userThemesPath, { recursive: true })
+        userThemesExist = true
+
+        // 复制custom.css到用户主题文件夹
+        this.copyCustomThemeToUserFolder()
+
+        // 显示通知告知用户主题存储位置
+        vscode.window
+          .showInformationMessage(`主题文件存储在: ${this.userThemesPath}`, '打开文件夹')
+          .then((selection) => {
+            if (selection === '打开文件夹') {
+              vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(this.userThemesPath))
+            }
+          })
+      } catch (error) {
+        const err = error as Error
+        console.error(`创建用户主题文件夹失败: ${err.message}`)
+        this.tryFallbackPath()
+      }
     }
 
-    // 加载用户主题
-    this.loadThemesFromFolder(this.userThemesPath)
-  }
-
-  /**
-   * 检查指定文件夹中是否存在CSS文件
-   * @param folderPath 文件夹路径
-   */
-  private checkThemesExist(folderPath: string): boolean {
-    if (!fs.existsSync(folderPath)) {
-      return false
+    // 如果用户主题文件夹存在，加载用户主题（会覆盖同名的内置主题）
+    if (userThemesExist) {
+      this.loadThemesFromFolder(this.userThemesPath, true)
     }
-
-    const files = fs.readdirSync(folderPath)
-    return files.some((file) => file.endsWith('.css'))
   }
 
   /**
    * 从指定文件夹加载主题
    * @param folderPath 文件夹路径
-   * @param skipExisting 是否跳过已存在的主题
+   * @param overrideExisting 是否覆盖已存在的主题
    */
-  private loadThemesFromFolder(folderPath: string, skipExisting: boolean = false): void {
+  private loadThemesFromFolder(folderPath: string, overrideExisting: boolean = false): void {
     if (fs.existsSync(folderPath)) {
       const files = fs.readdirSync(folderPath)
       for (const file of files) {
         if (file.endsWith('.css')) {
           const id = path.basename(file, '.css')
 
-          // 如果设置了跳过已存在的主题且已经加载过该主题，则跳过
-          if (skipExisting && this.themes.some((t) => t.id === id)) {
-            continue
+          // 检查主题是否已存在
+          const existingIndex = this.themes.findIndex((t) => t.id === id)
+          const cssPath = path.join(folderPath, file)
+
+          // 读取CSS内容
+          const cssContent = fs.readFileSync(cssPath, 'utf8')
+
+          // 提取主题元数据
+          const metadata = this.extractThemeMetadata(cssContent)
+
+          const theme: Theme = {
+            id,
+            name: metadata.name || id,
+            path: cssPath,
+            author: metadata.author,
+            description: metadata.description,
+            version: metadata.version,
           }
 
-          this.themes.push({
-            id,
-            name: id,
-            path: path.join(folderPath, file),
-          })
+          if (existingIndex >= 0) {
+            // 如果主题已存在且允许覆盖，则替换
+            if (overrideExisting) {
+              this.themes[existingIndex] = theme
+            }
+          } else {
+            // 如果主题不存在，则添加
+            this.themes.push(theme)
+          }
         }
       }
     }
+  }
+
+  /**
+   * 从CSS内容中提取主题元数据
+   * @param cssContent CSS内容
+   * @returns 主题元数据
+   */
+  private extractThemeMetadata(cssContent: string): ThemeMetadata {
+    const metadata: ThemeMetadata = {}
+
+    // 元数据正则表达式
+    const metadataRegex = {
+      name: /@theme-name:\s*(.+?)(?:\r|\n|$)/,
+      author: /@theme-author:\s*(.+?)(?:\r|\n|$)/,
+      description: /@theme-description:\s*(.+?)(?:\r|\n|$)/,
+      version: /@theme-version:\s*(.+?)(?:\r|\n|$)/,
+    }
+
+    // 提取第一个注释块
+    const commentBlockRegex = /\/\*\*([\s\S]*?)\*\//
+    const commentBlock = cssContent.match(commentBlockRegex)
+
+    if (commentBlock && commentBlock[1]) {
+      const commentContent = commentBlock[1]
+
+      // 提取各项元数据
+      Object.keys(metadataRegex).forEach((key) => {
+        const match = commentContent.match(metadataRegex[key as keyof typeof metadataRegex])
+        if (match && match[1]) {
+          metadata[key as keyof ThemeMetadata] = match[1].trim()
+        }
+      })
+    }
+
+    return metadata
   }
 
   /**
@@ -340,11 +398,18 @@ export class ThemeService implements IThemeService {
     // 保存用户选择的主题
     await vscode.workspace.getConfiguration('markdown-to-wechat').update('theme', themeId, true)
 
+    // 获取当前主题
+    const currentTheme = this.getCurrentTheme()
+
     // 发布主题变更事件
     this.eventBus.publish('theme.changed', {
       themeId,
       themeCSS,
       themeJson: this.getThemeAsJson(themeId),
+      themeName: currentTheme.name,
+      themeAuthor: currentTheme.author,
+      themeDescription: currentTheme.description,
+      themeVersion: currentTheme.version,
     })
   }
 
@@ -362,8 +427,17 @@ export class ThemeService implements IThemeService {
   reloadThemes(): void {
     this.ensureUserThemesFolder()
     this.loadThemes()
+
+    // 获取当前主题
+    const currentTheme = this.getCurrentTheme()
+
+    // 发布主题重新加载事件
     this.eventBus.publish('theme.reloaded', {
       themes: this.getThemes(),
+      currentThemeId: this.currentThemeId,
+      currentThemeName: currentTheme.name,
+      currentThemeAuthor: currentTheme.author,
+      currentThemeDescription: currentTheme.description,
     })
   }
 
@@ -450,7 +524,7 @@ export class ThemeService implements IThemeService {
    */
   private getDefaultTheme(): Theme | undefined {
     // 尝试获取默认主题或返回第一个主题
-    const defaultTheme = this.themes.find((t) => t.id === '经典')
+    const defaultTheme = this.themes.find((t) => t.id === 'default')
     return defaultTheme || this.themes[0]
   }
 }

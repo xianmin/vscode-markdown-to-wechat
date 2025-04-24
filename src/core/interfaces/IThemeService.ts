@@ -2,10 +2,23 @@ export interface Theme {
   id: string
   name: string
   path: string
+  author?: string
+  description?: string
+  version?: string
 }
 
 export interface ThemeStyleJson {
   [key: string]: { [property: string]: string }
+}
+
+/**
+ * 主题元数据
+ */
+export interface ThemeMetadata {
+  name?: string
+  author?: string
+  description?: string
+  version?: string
 }
 
 /**
