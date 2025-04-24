@@ -1,0 +1,36 @@
+name: Publish Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Compile and package extension
+        run: |
+          pnpm run compile
+          pnpm run package
+
+      - name: Publish to Visual Studio Marketplace
+        run: pnpm run publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
