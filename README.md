@@ -1,5 +1,5 @@
 <p align="center">
-<img width="200px" src="media/icons/markdown-to-wechat-light.svg" />
+<img width="200px" src="media/icons/markdown-to-wechat.png" />
 
 <h1 align="center">VSCode Markdown-to-Wechat</h1>
 </p>
