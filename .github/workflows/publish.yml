@@ -22,8 +22,16 @@ jobs:
           version: 8
           run_install: false
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+      - name: Install webview dependencies and build
+        run: |
+          cd webview-src
+          pnpm install
+          pnpm run build
+
+      - name: Install root dependencies
+        run: |
+          cd $GITHUB_WORKSPACE
+          pnpm install
 
       - name: Compile and package extension
         run: |
