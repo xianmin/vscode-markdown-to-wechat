@@ -6,3 +6,5 @@ node_modules
 
 # 开发模式生成的文件
 media/webview/assets/*-dev.*
+# 忽略整个media/webview目录
+media/webview/
