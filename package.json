@@ -2,9 +2,20 @@
   "name": "markdown-to-wechat",
   "displayName": "markdown-to-wechat",
   "description": "将Markdown转换为微信公众号兼容的HTML",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "publisher": "xianmin",
+  "icon": "media/icons/markdown-to-wechat.png",
+  "galleryBanner": {
+    "color": "#C4DFFF",
+    "theme": "light"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xianmin/vscode-markdown-to-wechat.git"
+  },
+  "license": "GPLv3",
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.74.0"
   },
   "categories": [
     "Other"
@@ -19,8 +30,8 @@
         "command": "markdown-to-wechat.previewMarkdown",
         "title": "markdown-to-wechat: 预览",
         "icon": {
-          "light": "./media/icons/wechat-preview-light.svg",
-          "dark": "./media/icons/wechat-preview-dark.svg"
+          "light": "./media/icons/markdown-to-wechat.svg",
+          "dark": "./media/icons/markdown-to-wechat.svg"
         }
       },
       {
@@ -128,7 +139,9 @@
     "pretest": "pnpm run compile && pnpm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "dev": "concurrently \"pnpm run watch\" \"cd webview-src && pnpm run watch\""
+    "dev": "concurrently \"pnpm run watch\" \"cd webview-src && pnpm run watch\"",
+    "package": "pnpm dlx @vscode/vsce package --no-dependencies",
+    "publish": "pnpm dlx @vscode/vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -138,6 +151,7 @@
     "@typescript-eslint/parser": "^8.28.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.3.2",
     "concurrently": "^8.2.2",
     "eslint": "^9.23.0",
     "typescript": "^5.8.2"

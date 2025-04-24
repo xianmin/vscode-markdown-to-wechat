@@ -9,3 +9,16 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+webview-src/**
+node_modules/**
+.pnpm-store
+pnpm-lock.yaml
+.npmrc
+.github/**
+.nvmrc
+.pnpmfile.cjs
+.vscerc.json
+**/node_modules
+**/.pnpm
+out/test/**
+out/**/*.map
