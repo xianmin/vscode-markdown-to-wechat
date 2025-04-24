@@ -1,122 +1,37 @@
-# Markdown to WeChat
+<p align="center">
+<img width="200px" src="media/icons/markdown-to-wechat-light.svg" />
 
-将 Markdown 转换为微信公众号兼容的 HTML，提供实时预览和主题定制功能。
+<h1 align="center">VSCode Markdown-to-Wechat</h1>
+</p>
+
+有没有人像我一样用 VSCode 编辑 Markdown 文本，然后发布到微信公众号的？
+
+通常你需要把 Markdown 内容先复制到其他编辑器，再复制到公众号上。
+现在，这一步你可以省略了。
+
+本扩展将 Markdown 转换为微信公众号兼容的 HTML ，直接在 VSCode 上预览复制，与 VSCode 完美结合。
+
+本项目完全开源，无需注册，安装即用。
+
+
+<img alt="截图" src="media/images/screenshoot.png">
+
 
 ## 功能特点
+1. 在 VSCode 上实时预览 Markdown 内容
+2. 一键复制公众号格式 HTML
+3. 离线使用
+4. 本地 css 主题样式管理
+5. 主题色切换
+6. 标题编号、强制换行、图片域名、引用链接等特色功能
 
-- 实时预览 Markdown 内容
-- 自定义主题支持
-- 一键复制公众号格式 HTML
-- 可调整的样式设置
-- 标题自动编号功能
+## 为何开发这个扩展
+我日常使用 VSCode 编辑 Markdown ，记笔记、写作，发布到个人博客。
+自 2025 年开始写微信公众号，每次发布都要在其他 Markdown 编辑器中转一个流程，这让我觉得挺别扭。
+有时候在手机上预览，发现有地方需要修改，这个复制再复制的流程又得重复一次。
+为了节省这几分钟，跳过中间环节，所以有了这个扩展。
 
-## 架构设计
-
-项目采用模块化架构，基于依赖注入模式设计：
-
-### 目录结构
-
-```
-markdown-to-wechat/
-├── src/                      # 扩展主代码
-│   ├── core/                 # 核心领域层
-│   │   └── interfaces/       # 接口定义
-│   ├── infrastructure/       # 基础设施层
-│   │   ├── container.ts      # 依赖注入容器
-│   │   ├── EventBus.ts       # 事件总线
-│   │   └── CommandManager.ts # 命令管理器
-│   ├── services/             # 服务层
-│   │   ├── PreviewService.ts # 预览服务
-│   │   ├── ThemeService.ts   # 主题服务
-│   │   ├── SettingsService.ts# 设置服务
-│   │   └── WebViewService.ts # WebView服务
-│   ├── utils/                # 工具函数
-│   │   ├── uriHelper.ts      # URI工具
-│   │   └── themeManager.ts   # 主题管理工具
-│   ├── webview/              # WebView相关
-│   │   └── contentProvider.ts# 内容提供
-│   └── extension.ts          # 扩展入口
-├── media/                    # 静态资源
-│   ├── themes/               # 默认主题
-│   └── webview/              # WebView应用构建输出
-├── webview-src/              # WebView React应用源码
-│   ├── src/                  # React应用源码
-│   ├── package.json          # WebView依赖
-│   └── vite.config.ts        # Vite配置
-└── package.json              # 扩展依赖
-```
-
-### 架构分层
-
-项目使用清晰的分层架构：
-
-- **核心层 (Core)**: 定义领域接口和模型
-- **基础设施层 (Infrastructure)**: 提供技术实现和底层支持
-- **服务层 (Services)**: 实现业务逻辑
-- **展示层 (WebView)**: 负责用户界面
-
-### 通信机制
-
-组件之间通过事件总线进行松耦合通信：
-
-- 服务发布事件到事件总线
-- 其他服务订阅并处理相关事件
-- 减少组件间直接依赖
-
-## 开发流程
-
-### 环境准备
-
-确保已安装 Node.js 和 pnpm。
-
-### WebView 应用开发
-
-```bash
-# 进入 WebView 源码目录
-cd webview-src
-
-# 安装依赖
-pnpm install
-
-# 开发模式
-pnpm run dev
-
-# 构建到 media/webview
-pnpm run build
-```
-
-### 扩展开发
-
-```bash
-# 根目录安装依赖
-pnpm install
-
-# 编译扩展
-pnpm run compile
-
-# 启动调试 (VS Code 中按 F5)
-```
-
-## 使用指南
-
-### 基本使用
-
-1. 打开 Markdown 文件
-2. 执行命令 `微信公众号: 预览 Markdown` 或使用快捷键
-3. 在预览窗口中查看效果，可实时编辑
-
-### 设置选项
-
-在设置中可调整：
-
-- 字体大小
-- 标题编号样式
-- 主题颜色
-- 换行方式
-
-### 自定义主题
-
-1. 执行命令 `微信公众号: 打开主题文件夹`
-2. 在文件夹中添加自定义 `.css` 主题文件
-3. 执行命令 `微信公众号: 刷新主题列表`
-4. 执行命令 `微信公众号: 选择预览主题` 应用主题
+开发这个扩展的过程中，我还发现了一些额外的好处，比如：
+可通过 VSCode 同步配置；
+本地管理个人的 css 样式文件，等等。
+这样，我就拥有了一个完全自主可控的微信公众号排版工具。
