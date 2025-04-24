@@ -32,12 +32,40 @@ export function rehypeApplyStyles(themeStyles: ThemeStyleJson): Plugin<[], Root>
         node.properties = {}
       }
 
+      // 特殊处理 a 标签
+      if (node.tagName === 'a') {
+        // 将 a 标签转换为 span
+        node.tagName = 'span'
+
+        // 删除 href 属性
+        delete node.properties.href
+
+        // 获取元素的样式 - 使用 a 标签的样式
+        const aStyles = getElementStylesForNode(
+          { ...node, tagName: 'a' } as ExtendedElement,
+          themeStyles,
+          rootVariables
+        )
+
+        // 应用链接样式到 span
+        if (Object.keys(aStyles).length > 0) {
+          const styleString = convertStylesToString(aStyles)
+          node.properties.style = node.properties.style
+            ? `${node.properties.style} ${styleString}`
+            : styleString
+        }
+
+        // 继续后续处理
+      }
+
       // 获取元素的样式
       const styles = getElementStylesForNode(node, themeStyles, rootVariables)
 
       // 应用样式到节点
       if (Object.keys(styles).length > 0) {
-        node.properties.style = convertStylesToString(styles)
+        node.properties.style = node.properties.style
+          ? `${node.properties.style} ${convertStylesToString(styles)}`
+          : convertStylesToString(styles)
       }
 
       // 特殊处理 pre 中的 code

@@ -13,7 +13,7 @@ import {
   rehypeApplyStyles,
   remarkNumberedHeadings,
   rehypeImageTransformer,
-  remarkReferenceLinks,
+  rehypeLinkToReference,
 } from '../plugins'
 
 export function useMarkdownProcessor(
@@ -75,11 +75,6 @@ export function useMarkdownProcessor(
           .use(remarkGfm)
           .use(remarkCjkFriendly) // https://github.com/tats-u/markdown-cjk-friendly/tree/main/packages/remark-cjk-friendly
 
-        // 根据设置条件应用remarkReferenceLinks插件
-        if (settings.enableReferenceLinks) {
-          processor.use(remarkReferenceLinks) // 将链接和图片转换为引用格式，并在文档末尾添加统一定义
-        }
-
         // 根据设置条件应用remarkBreaks插件
         if (settings.forceLineBreaks) {
           processor.use(remarkBreaks)
@@ -90,6 +85,7 @@ export function useMarkdownProcessor(
           .use(remarkNumberedHeadings({ style: settings.headingNumberingStyle })) // 为二级标题添加序号前缀
           .use(remarkRehype, { allowDangerousHtml: true })
           .use(rehypeImageTransformer({ imageDomain: settings.imageDomain })) // 转换图片为figure结构
+          .use(settings.enableReferenceLinks ? rehypeLinkToReference : () => (tree) => tree)
           .use(rehypeApplyStyles(mergedThemeStyles))
           .use(rehypeStringify, { allowDangerousHtml: true })
           .process(markdown)
