@@ -4,7 +4,7 @@ import { IWebViewService } from '../core/interfaces/IWebViewService'
 import { IThemeService } from '../core/interfaces/IThemeService'
 import { ISettingsService } from '../core/interfaces/ISettingsService'
 import { IEventBus } from '../core/interfaces/IEventBus'
-import { AppSettings } from '../services/SettingsService'
+import { AppSettings } from './SettingsService'
 
 /**
  * 预览服务实现
