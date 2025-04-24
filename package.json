@@ -2,7 +2,7 @@
   "name": "markdown-to-wechat",
   "displayName": "markdown-to-wechat",
   "description": "将Markdown转换为微信公众号兼容的HTML，在 VSCode 上预览复制",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "xianmin",
   "icon": "media/icons/markdown-to-wechat.png",
   "galleryBanner": {

@@ -25,6 +25,24 @@
 5. 主题色切换
 6. 标题编号、强制换行、图片域名、引用链接等特色功能
 
+
+## 如何使用
+当你安装了这个扩展，在你编辑 `markdown` 文件窗口的右上角，会添加一个 `markdown-to-wechat: 预览` 的图标，点击即可。
+
+<img alt="编辑窗口右上角的预览图标" src="media/images/screenshoot-2.png">
+
+
+## 如何自定义主题
+你可以通过 VSCode 命令面板，通常默认快捷键是 `Ctrl-Shift-p` ，来使用 `markdown-to-vscode` 的相关命令。
+
+<img alt="markdown-to-vscode 的相关命令" src="media/images/screenshoot-3.png">
+
+
+比如 `markdown-to-vscode: 打开主题文件夹` ，它会打开主题文件默认的存储位置。
+
+在 `themes/` 目录内，已经有一个 `custom.css` 文件，你可以直接编辑它，或者新建一个 css 文件。
+
+
 ## 为何开发这个扩展
 我日常使用 VSCode 编辑 Markdown ，记笔记、写作，发布到个人博客。
 自 2025 年开始写微信公众号，每次发布都要在其他 Markdown 编辑器中转一个流程，这让我觉得挺别扭。
