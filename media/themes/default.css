@@ -146,14 +146,6 @@ a {
   text-underline-offset: 0.125em;
 }
 
-pre {
-  background-color: var(--code-background);
-  padding: 1em;
-  border-radius: 5px;
-  overflow-x: auto;
-  margin: 1.5em 0;
-}
-
 code {
   padding: 0.2em 0.375em;
   border-radius: 0.25em;

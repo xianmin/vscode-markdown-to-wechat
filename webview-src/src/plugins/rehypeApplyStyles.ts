@@ -1,12 +1,14 @@
 import { visit } from 'unist-util-visit'
-import type { Element, Root } from 'hast'
+import type { Element, Root, Text } from 'hast'
 import type { Node } from 'unist'
 import type { Plugin } from 'unified'
 import { ThemeStyleJson } from '../hooks/useThemeManager'
+import { highlightStyles, preStyles, codeStyles } from '../styles/highlightStyles'
 
 // 扩展Element类型，添加parent
 interface ExtendedElement extends Element {
   parent?: Node
+  __processed?: boolean // 添加标记字段
 }
 
 /**
@@ -26,10 +28,128 @@ export function rehypeApplyStyles(themeStyles: ThemeStyleJson): Plugin<[], Root>
       }
     }
 
-    // 访问树中的每个元素
+    // 第一遍：特殊处理pre和code元素
     visit(tree, 'element', (node: ExtendedElement) => {
       if (!node.properties) {
         node.properties = {}
+      }
+
+      // 处理代码块，特殊处理 pre 中的 code
+      if (node.tagName === 'pre') {
+        // 应用pre元素样式
+        node.properties.style = node.properties.style
+          ? `${node.properties.style} ${convertStylesToString(preStyles)}`
+          : convertStylesToString(preStyles)
+
+        // 处理pre内的code元素
+        visit(node, 'element', (child: ExtendedElement) => {
+          if (child.tagName === 'code') {
+            if (!child.properties) {
+              child.properties = {}
+            }
+
+            // 应用代码块基础样式
+            let inlineStyles = convertStylesToString(codeStyles)
+
+            // 应用语言特定样式
+            if (child.properties.className) {
+              const classNames = Array.isArray(child.properties.className)
+                ? child.properties.className
+                : [child.properties.className]
+
+              // 应用高亮基础样式
+              if (highlightStyles['hljs']) {
+                inlineStyles += ' ' + convertStylesToString(highlightStyles['hljs'])
+              }
+
+              // 处理子元素的高亮样式
+              visit(child, 'element', (highlightNode: Element) => {
+                if (!highlightNode.properties) {
+                  highlightNode.properties = {}
+                }
+
+                if (highlightNode.properties.className) {
+                  const highlightClasses = Array.isArray(highlightNode.properties.className)
+                    ? highlightNode.properties.className
+                    : [highlightNode.properties.className]
+
+                  // 为每个高亮类应用对应的样式
+                  for (const cls of highlightClasses) {
+                    if (typeof cls === 'string' && highlightStyles[cls]) {
+                      const hlStyle = convertStylesToString(highlightStyles[cls])
+                      highlightNode.properties.style = highlightNode.properties.style
+                        ? `${highlightNode.properties.style} ${hlStyle}`
+                        : hlStyle
+                    }
+                  }
+                }
+
+                // 处理文本节点空格和特殊字符
+                processTextNodesForSpaces(highlightNode)
+              })
+            }
+
+            // 处理code元素的文本节点
+            processTextNodesForSpaces(child)
+
+            // 应用所有样式
+            child.properties.style = child.properties.style
+              ? `${child.properties.style} ${inlineStyles}`
+              : inlineStyles
+
+            // 清除类名，因为微信不支持
+            // 注意：在应用样式后再清除，这样不会影响处理逻辑
+            delete child.properties.className
+
+            // 标记code元素已被处理
+            child.__processed = true
+          }
+        })
+
+        // 清除pre的类名，因为微信不支持
+        delete node.properties.className
+
+        // 添加MacOS风格的装饰（如果需要）
+        const macCodeSvg = `<svg width="54" height="14" viewBox="0 0 54 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle">
+          <circle cx="7" cy="7" r="4.5" fill="#FF5F56" stroke="#E0443E" stroke-width="0.5"/>
+          <circle cx="27" cy="7" r="4.5" fill="#FFBD2E" stroke="#DEA123" stroke-width="0.5"/>
+          <circle cx="47" cy="7" r="4.5" fill="#27C93F" stroke="#1AAB29" stroke-width="0.5"/>
+        </svg>`
+
+        // 创建装饰span元素
+        const decorSpan = {
+          type: 'element',
+          tagName: 'span',
+          properties: {
+            style: 'padding:5px;line-height:1;',
+          },
+          children: [
+            {
+              type: 'raw',
+              value: macCodeSvg,
+            },
+          ],
+        }
+
+        // 将装饰元素添加到pre的开头
+        if (Array.isArray(node.children)) {
+          node.children.unshift(decorSpan as any)
+        }
+
+        // 标记pre元素已被处理
+        node.__processed = true
+      }
+    })
+
+    // 第二遍：处理其他所有元素
+    visit(tree, 'element', (node: ExtendedElement) => {
+      if (!node.properties) {
+        node.properties = {}
+      }
+
+      // 跳过已处理的元素
+      if (node.__processed) {
+        return
       }
 
       // 特殊处理 a 标签
@@ -54,8 +174,6 @@ export function rehypeApplyStyles(themeStyles: ThemeStyleJson): Plugin<[], Root>
             ? `${node.properties.style} ${styleString}`
             : styleString
         }
-
-        // 继续后续处理
       }
 
       // 获取元素的样式
@@ -66,23 +184,6 @@ export function rehypeApplyStyles(themeStyles: ThemeStyleJson): Plugin<[], Root>
         node.properties.style = node.properties.style
           ? `${node.properties.style} ${convertStylesToString(styles)}`
           : convertStylesToString(styles)
-      }
-
-      // 特殊处理 pre 中的 code
-      if (node.tagName === 'pre') {
-        visit(node, 'element', (child: Element) => {
-          if (child.tagName === 'code') {
-            if (!child.properties) {
-              child.properties = {}
-            }
-            // 设置 code 元素的样式
-            const codeStyles = {
-              backgroundColor: 'transparent',
-              padding: '0',
-            }
-            child.properties.style = convertStylesToString(codeStyles)
-          }
-        })
       }
 
       // 处理图片
@@ -104,6 +205,48 @@ export function rehypeApplyStyles(themeStyles: ThemeStyleJson): Plugin<[], Root>
 
     return tree
   }
+}
+
+/**
+ * 处理节点中的文本，替换空格和特殊字符
+ * 这个函数使用更可靠的方式处理空格，将文本节点转换为HTML片段
+ */
+function processTextNodesForSpaces(node: Element): void {
+  if (!node.children) {
+    return
+  }
+
+  const newChildren: any[] = []
+
+  for (const child of node.children) {
+    if (child.type === 'text' && typeof child.value === 'string') {
+      const text = child.value
+
+      // 1. 处理制表符
+      let processedText = text.replace(/\t/g, '    ')
+
+      // 2. 处理换行符
+      processedText = processedText.replace(/\r\n|\n/g, '<br>')
+
+      // 3. 处理空格 - 这是关键部分，使用non-breaking space
+      processedText = processedText.replace(/ /g, '&nbsp;')
+
+      // 如果有处理过的文本，使用raw节点替换文本节点
+      if (processedText !== text) {
+        newChildren.push({
+          type: 'raw',
+          value: processedText,
+        })
+      } else {
+        newChildren.push(child)
+      }
+    } else {
+      newChildren.push(child)
+    }
+  }
+
+  // 替换原节点的子节点
+  node.children = newChildren
 }
 
 /**

@@ -7,6 +7,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import remarkBreaks from 'remark-breaks'
 import remarkCjkFriendly from 'remark-cjk-friendly'
+import rehypeHighlight from 'rehype-highlight'
 import { ThemeStyleJson } from './useThemeManager'
 import { AppSettings } from '../types/settings'
 import {
@@ -86,7 +87,8 @@ export function useMarkdownProcessor(
           .use(remarkRehype, { allowDangerousHtml: true })
           .use(rehypeImageTransformer({ imageDomain: settings.imageDomain })) // 转换图片为figure结构
           .use(settings.enableReferenceLinks ? rehypeLinkToReference : () => (tree) => tree)
-          .use(rehypeApplyStyles(mergedThemeStyles))
+          .use(rehypeHighlight) // 添加代码高亮处理
+          .use(rehypeApplyStyles(mergedThemeStyles)) // 应用内联样式，包括代码高亮的内联样式
           .use(rehypeStringify, { allowDangerousHtml: true })
           .process(markdown)
 

@@ -16,6 +16,7 @@
     "antd": "^5.24.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "rehype-highlight": "^7.0.2",
     "rehype-stringify": "^10.0.0",
     "remark-breaks": "^4.0.0",
     "remark-cjk-friendly": "^1.1.0",
