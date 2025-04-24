@@ -30,8 +30,8 @@
         "command": "markdown-to-wechat.previewMarkdown",
         "title": "markdown-to-wechat: 预览",
         "icon": {
-          "light": "./media/icons/markdown-to-wechat.svg",
-          "dark": "./media/icons/markdown-to-wechat.svg"
+          "light": "./media/icons/markdown-to-wechat-light.svg",
+          "dark": "./media/icons/markdown-to-wechat-dark.svg"
         }
       },
       {
