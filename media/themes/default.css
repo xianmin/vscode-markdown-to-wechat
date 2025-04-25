@@ -5,8 +5,18 @@
  * @theme-version: 1.0.0
  */
 
+
 :root {
-  --primary-color: #017fc0;
+  --primary-color: #017fc0; /* 主题色 */
+  --secondary-color: #f1f1f1;
+  --text-color: #212121;
+  --light-text-color: #666666;
+  --background-color: #ffffff;
+  --border-color: #e0e0e0;
+  --code-background: #f8f8f8;
+  --blockquote-color: #f5f5f5;
+  --p-margin: 26px;
+  /* --custom-var，你也可以添加更多自定义变量 */
 }
 
 body {
@@ -15,8 +25,7 @@ body {
   font-size: 16px;
   line-height: 1.618;
   letter-spacing: 0.0618em;
-  color: #212121;
-  background-color: #fff;
+  color:  var(--text-color);
   padding: 0 0.618em;
 }
 
@@ -24,7 +33,7 @@ h1 {
   display: table;
   padding: 0 1em;
   border-bottom: 2px solid var(--primary-color);
-  margin: 2em auto 1em;
+  margin: 2.5em auto 1em;
   font-size: 1.3em;
   font-weight: bold;
   text-align: center;
@@ -33,7 +42,7 @@ h1 {
 h2 {
   display: table;
   padding: 0.2em 1em;
-  margin: 2em auto 1em;
+  margin: 2.5em auto var(--p-margin);
   color: #fff;
   background: var(--primary-color);
   font-size: 1.2em;
@@ -44,39 +53,39 @@ h2 {
 h3 {
   padding-left: 0.5em;
   border-left: 3px solid var(--primary-color);
-  margin: 2em auto 1em;
+  margin: 2em auto var(--p-margin);
   font-size: 1.1em;
   font-weight: bold;
   line-height: 1.2;
 }
 
 h4 {
-  margin: 2em auto 0.5em;
+  margin: 2em auto var(--p-margin);
   color: var(--primary-color);
   font-size: 1em;
   font-weight: bold;
 }
 
 h5 {
-  margin: 1.5em auto 0.5em;
+  margin: 1.5em auto var(--p-margin);
   color: var(--primary-color);
   font-size: 1em;
   font-weight: bold;
 }
 
 h6 {
-  margin: 1.5em auto 0.5em;
+  margin: 1.5em auto var(--p-margin);
   color: var(--primary-color);
   font-size: 1em;
   font-weight: bold;
 }
 
 p {
-  margin: 1em 0;
+  margin: var(--p-margin) 0;
 }
 
 figure {
-  margin: 1.5em 0;
+  margin: var(--p-margin) 0;
 }
 
 img {
@@ -86,7 +95,7 @@ img {
 figcaption {
   padding: 0.5em;
   color: #777;
-  text-align: right;
+  text-align: center;
 }
 
 blockquote {
@@ -94,13 +103,31 @@ blockquote {
   padding: 0.1px 1em;
   border-left: 4px solid var(--primary-color);
   border-radius: 6px;
-  color: #111827;
-  margin: 1.6em 0;
+  background: var(--blockquote-color);
+  margin: var(--p-margin) 0;
 }
 
 ol {
   padding-left: 1em;
   margin-left: 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--p-margin) 0;
+}
+
+th {
+  border: 1px solid var(--border-color);
+  padding: 0.75em;
+  background-color: var(--secondary-color);
+  text-align: left;
+}
+
+td {
+  border: 1px solid var(--border-color);
+  padding: 0.75em;
 }
 
 ul {
@@ -114,7 +141,7 @@ li {
 }
 
 .footnotes {
-  margin: 0.5em 8px;
+  margin: var(--p-margin) 0;
   font-size: 80%;
 }
 
@@ -127,7 +154,7 @@ hr {
   transform-origin: 0 0;
   transform: scale(1, 0.5);
   height: 0.4em;
-  margin: 1.5em 0;
+  margin: var(--p-margin) 0;
 }
 
 strong {
