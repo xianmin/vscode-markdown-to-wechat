@@ -42,6 +42,27 @@
 
 在 `themes/` 目录内，已经有一个 `custom.css` 文件，你可以直接编辑它，或者新建一个 css 文件。
 
+对于扩展中的默认主题，位于本项目的 `/media/themes/` 目录内。
+
+## 开发指南
+本项目源码分为两部分：一个扩展端的源码，位于 `src/` 目录下；一个是预览端的源码，位于 `webview-src/` 目录下。
+
+```bash
+# 安装扩展依赖，在项目根目录下运行
+pnpm i
+
+# 安装预览端的依赖，在 webview-src/ 目录下运行
+cd webview-src/
+pnpm i
+
+# 回到根目录，运行开发模式
+cd ..
+pnpm run dev
+```
+
+使用 VSCode 打开项目，按下 `F5` ，即可运行或 Debug 本扩展的开发版。
+
+关于本项目的架构，可查阅 [GUIDE](./GUIDE.md) 。
 
 ## 为何开发这个扩展
 我日常使用 VSCode 编辑 Markdown ，记笔记、写作，发布到个人博客。
@@ -53,3 +74,18 @@
 可通过 VSCode 同步配置；
 本地管理个人的 css 样式文件，等等。
 这样，我就拥有了一个完全自主可控的微信公众号排版工具。
+
+
+## 赞助支持
+如果你觉得这个工具对你有帮助，可以考虑给予一些赞助支持，这将有助于我持续改进和维护这个项目。
+
+**你的每一份支持都是我继续开发的动力！**
+
+<p align="center">
+<img width="400px" src="media/images/wechat_qrcode.jpg" />
+</p>
+
+
+## 感谢
+- [remark](https://github.com/remarkjs/) 提供核心 markdown 转换。
+- [doocs/md](https://github.com/doocs/md) 提供灵感来源。
